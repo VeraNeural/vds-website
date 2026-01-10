@@ -637,6 +637,81 @@ export default function VDSHomePage() {
           grid-row: span 2;
         }
 
+        /* ===================== ABOUT SECTION ===================== */
+        .about-content {
+          max-width: 1000px;
+          margin: 0 auto;
+          text-align: center;
+        }
+
+        .about-text {
+          margin-bottom: 80px;
+        }
+
+        .about-text p {
+          font-size: 1.15rem;
+          line-height: 2;
+          color: var(--pearl-dim);
+          margin-bottom: 25px;
+        }
+
+        .about-text strong {
+          color: var(--gold);
+          font-weight: 500;
+        }
+
+        .about-stats {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 40px;
+        }
+
+        .about-stat {
+          padding: 40px 30px;
+          background: rgba(201, 169, 98, 0.03);
+          border: 1px solid rgba(201, 169, 98, 0.12);
+          border-radius: 20px;
+          transition: all 0.4s ease;
+        }
+
+        .about-stat:hover {
+          background: rgba(201, 169, 98, 0.08);
+          border-color: rgba(201, 169, 98, 0.3);
+          transform: translateY(-8px);
+        }
+
+        .about-stat-number {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 3.5rem;
+          font-weight: 300;
+          color: var(--gold);
+          line-height: 1;
+          margin-bottom: 15px;
+        }
+
+        .about-stat-label {
+          font-size: 0.75rem;
+          font-weight: 500;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--pearl-dim);
+        }
+
+        @media (max-width: 1024px) {
+          .about-stats {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .about-stats {
+            grid-template-columns: 1fr;
+          }
+          .about-text p {
+            font-size: 1.05rem;
+          }
+        }
+
         /* ===================== WORK SECTION ===================== */
         .work-grid {
           display: grid;
@@ -1211,18 +1286,19 @@ export default function VDSHomePage() {
           <div className="hero-content">
             <div className="hero-label">
               <span className="hero-label-dot" />
-              <span className="hero-label-text">Luxury Design Excellence</span>
+              <span className="hero-label-text">Global Luxury Design</span>
             </div>
             <h1 className="hero-title">
-              <span>Spaces That</span>
-              <span className="hero-title-accent">Inspire Living</span>
+              <span>Where Vision Becomes</span>
+              <span className="hero-title-accent">Legacy</span>
             </h1>
             <p className="hero-desc">
-              Where architecture, interior design, and landscape converge into environments 
-              that elevate life and inspire the soul. Experience design without boundaries.
+              Led by Julija and an elite team of world-class designers, we craft 
+              extraordinary spaces for discerning clients across the globe. From 
+              multi-million dollar residences to landmark commercial projects.
             </p>
             <div className="hero-buttons">
-              <a href="https://veraneural.ai/vds" className="btn-primary">Enter Virtual Studio</a>
+              <a href="#contact" className="btn-primary">Begin Your Project</a>
               <a href="#work" className="btn-outline">View Our Work</a>
             </div>
           </div>
@@ -1239,33 +1315,33 @@ export default function VDSHomePage() {
           <div className="container">
             <div className="vds-content">
               <div className="vds-text">
-                <div className="partnership reveal">Partnering with VERANeural</div>
+                <div className="partnership reveal">Now Featuring AI-Powered Design</div>
                 <h2 className="reveal reveal-delay-1">The Virtual <span>Design Studio</span></h2>
                 <p className="reveal reveal-delay-2">
-                  Step into your space before it's built. The Virtual Design Studio lets you 
-                  visualize, customize, and experience your environment in immersive 3D.
+                  Experience your space before construction begins. Our proprietary Virtual Design 
+                  Studio allows you to walk through your project in stunning 3D, making real-time 
+                  adjustments until every detail is perfect.
                 </p>
                 <p className="reveal reveal-delay-3">
-                  VERA is your creative companion inside VDS. She helps you explore layouts, 
-                  suggest materials, visualize spaces in real-time, and refine your vision 
-                  until it feels exactly right.
+                  Powered by VERA, our AI design assistant, you can explore materials, lighting, 
+                  and layouts with unprecedented precision. A Vision Design Studio exclusive.
                 </p>
                 <div className="vds-features reveal reveal-delay-4">
                   <div className="vds-feature">
-                    <h4>Visualize in 3D</h4>
-                    <p>Walk through your space. See how light moves, how rooms connect.</p>
+                    <h4>Immersive 3D</h4>
+                    <p>Walk through your space before a single wall is built.</p>
                   </div>
                   <div className="vds-feature">
-                    <h4>Design with VERA</h4>
-                    <p>Tell VERA what you're imagining. She helps bring ideas to life.</p>
+                    <h4>Real-Time Changes</h4>
+                    <p>Adjust materials, colors, and layouts instantly.</p>
                   </div>
                   <div className="vds-feature">
-                    <h4>Save & Share</h4>
-                    <p>Keep designs, compare versions, share when you're ready.</p>
+                    <h4>AI-Assisted</h4>
+                    <p>VERA helps refine your vision with intelligent suggestions.</p>
                   </div>
                 </div>
                 <div style={{ marginTop: '50px' }} className="reveal">
-                  <a href="https://veraneural.ai/vds" className="btn-primary">Enter the Design Studio</a>
+                  <a href="https://veraneural.ai/vds" className="btn-primary">Experience the Studio</a>
                 </div>
               </div>
               <div className="vds-images reveal">
@@ -1277,6 +1353,61 @@ export default function VDSHomePage() {
                 </div>
                 <div className="vds-img">
                   <img src={images.pool} alt="Pool Design" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* About Section */}
+        <section className="section section-noir" id="about">
+          <div className="container">
+            <div className="section-header">
+              <div className="section-label reveal">
+                <span className="section-label-line" />
+                <span className="section-label-text">Who We Are</span>
+                <span className="section-label-line" />
+              </div>
+              <h2 className="section-title reveal reveal-delay-1">An Elite <span>Global Team</span></h2>
+            </div>
+
+            <div className="about-content">
+              <div className="about-text reveal reveal-delay-2">
+                <p>
+                  Vision Design Studio is led by <strong>Julija</strong>, a visionary designer whose 
+                  work spans three continents and commands the attention of the world's most 
+                  discerning clientele. With over two decades of experience and a portfolio 
+                  exceeding <strong>$2 billion</strong> in completed projects, we don't just design 
+                  spaces—we create legacies.
+                </p>
+                <p>
+                  Our elite team speaks <strong>12 languages</strong> and brings together the finest 
+                  architects, interior designers, and landscape artists from Milan, Dubai, New York, 
+                  and beyond. We serve a select number of clients each year, ensuring every project 
+                  receives our complete dedication.
+                </p>
+                <p>
+                  From private islands to penthouse collections, from royal residences to 
+                  headquarters of Fortune 100 companies—when the stakes are highest, 
+                  Vision Design Studio delivers.
+                </p>
+              </div>
+              <div className="about-stats reveal reveal-delay-3">
+                <div className="about-stat">
+                  <div className="about-stat-number">$2B+</div>
+                  <div className="about-stat-label">Project Value</div>
+                </div>
+                <div className="about-stat">
+                  <div className="about-stat-number">25+</div>
+                  <div className="about-stat-label">Years Experience</div>
+                </div>
+                <div className="about-stat">
+                  <div className="about-stat-number">12</div>
+                  <div className="about-stat-label">Languages</div>
+                </div>
+                <div className="about-stat">
+                  <div className="about-stat-number">40+</div>
+                  <div className="about-stat-label">Countries Served</div>
                 </div>
               </div>
             </div>
@@ -1297,13 +1428,13 @@ export default function VDSHomePage() {
 
             <div className="work-grid">
               <div className="work-card reveal">
-                <img src={images.lobby} alt="Residential" />
+                <img src={images.lobby} alt="Private Residences" />
                 <div className="work-card-overlay" />
                 <span className="work-card-arrow">↗</span>
                 <div className="work-card-content">
                   <div className="work-card-number">01</div>
-                  <h3>Residential</h3>
-                  <p>Bespoke living spaces where luxury meets comfort.</p>
+                  <h3>Private Residences</h3>
+                  <p>Estates, villas, and penthouses for the world's elite.</p>
                 </div>
               </div>
 
@@ -1313,8 +1444,8 @@ export default function VDSHomePage() {
                 <span className="work-card-arrow">↗</span>
                 <div className="work-card-content">
                   <div className="work-card-number">02</div>
-                  <h3>Commercial</h3>
-                  <p>Spaces that inspire success and productivity.</p>
+                  <h3>Corporate & Hospitality</h3>
+                  <p>Headquarters, hotels, and landmark destinations.</p>
                 </div>
               </div>
 
@@ -1324,19 +1455,19 @@ export default function VDSHomePage() {
                 <span className="work-card-arrow">↗</span>
                 <div className="work-card-content">
                   <div className="work-card-number">03</div>
-                  <h3>Outdoor</h3>
-                  <p>Where architecture meets nature.</p>
+                  <h3>Landscape & Exterior</h3>
+                  <p>Gardens, pools, and outdoor living on a grand scale.</p>
                 </div>
               </div>
 
               <div className="work-card reveal reveal-delay-3">
-                <img src={images.residence} alt="VERA Spaces" />
+                <img src={images.residence} alt="Bespoke" />
                 <div className="work-card-overlay" />
                 <span className="work-card-arrow">↗</span>
                 <div className="work-card-content">
                   <div className="work-card-number">04</div>
-                  <h3>VERA Spaces</h3>
-                  <p>Technology meets tranquility.</p>
+                  <h3>Bespoke Commissions</h3>
+                  <p>One-of-a-kind projects that defy categorization.</p>
                 </div>
               </div>
             </div>
@@ -1427,7 +1558,8 @@ export default function VDSHomePage() {
               <div className="award-text">
                 <h2 className="reveal">Award <span>Winning</span></h2>
                 <p className="reveal reveal-delay-1">
-                  Recognized for excellence in design, innovation, and client satisfaction.
+                  Internationally recognized. Featured in Architectural Digest, Elle Decor, 
+                  and World of Interiors. Winner of 14 design excellence awards.
                 </p>
                 <a href="https://veraneural.ai/portfolio" className="btn-primary reveal reveal-delay-2">
                   View Full Portfolio
