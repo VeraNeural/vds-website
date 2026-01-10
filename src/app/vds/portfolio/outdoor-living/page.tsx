@@ -24,12 +24,12 @@ function OutdoorLivingPage() {
         .portfolio-page {
           min-height: 100vh;
           background: #0a0a0a;
-          padding: 100px 40px 60px;
+          padding: 140px 80px 100px;
         }
 
         .portfolio-header {
           text-align: center;
-          margin-bottom: 40px;
+          margin-bottom: 80px;
         }
 
         .portfolio-back {
@@ -378,7 +378,7 @@ function OutdoorLivingPage() {
 
         @media (max-width: 768px) {
           .portfolio-page {
-            padding: 80px 20px 40px;
+            padding: 100px 24px 60px;
           }
 
           .videos-grid {

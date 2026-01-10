@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 
 interface Message {
@@ -103,6 +104,7 @@ export default function VeraBubble({
   projectName,
   onUpgradeClick 
 }: VeraBubbleProps) {
+  const [isMounted, setIsMounted] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
@@ -113,6 +115,10 @@ export default function VeraBubble({
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Initialize with contextual message
   useEffect(() => {
@@ -278,7 +284,7 @@ export default function VeraBubble({
     }
   }
 
-  return (
+  const bubbleUi = (
     <>
       <style jsx>{`
         /* ========================================
@@ -290,6 +296,12 @@ export default function VeraBubble({
           right: 24px;
           z-index: 9000;
           font-family: 'Outfit', system-ui, sans-serif;
+        }
+
+        /* Keep the bubble clear of bottom UI on these views */
+        .vera-bubble-container[data-context='portfolio'],
+        .vera-bubble-container[data-context='immersive'] {
+          bottom: 120px;
         }
 
         /* ========================================
@@ -743,6 +755,11 @@ export default function VeraBubble({
             right: 16px;
           }
 
+          .vera-bubble-container[data-context='portfolio'],
+          .vera-bubble-container[data-context='immersive'] {
+            bottom: 140px;
+          }
+
           .vera-bubble-message {
             max-width: 180px;
             font-size: 0.8rem;
@@ -765,7 +782,7 @@ export default function VeraBubble({
         }
       `}</style>
 
-      <div className="vera-bubble-container">
+      <div className="vera-bubble-container" data-context={context}>
         {!isExpanded ? (
           /* Collapsed Bubble */
           <div className="vera-bubble-collapsed" onClick={() => setIsExpanded(true)}>
@@ -895,4 +912,7 @@ export default function VeraBubble({
       </div>
     </>
   )
+
+  if (!isMounted) return null
+  return createPortal(bubbleUi, document.body)
 }

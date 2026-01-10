@@ -53,12 +53,12 @@ function ResidentialPage() {
         .portfolio-page {
           min-height: 100vh;
           background: #0a0a0a;
-          padding: 100px 40px 60px;
+          padding: 140px 80px 100px;
         }
 
         .portfolio-header {
           text-align: center;
-          margin-bottom: 40px;
+          margin-bottom: 80px;
         }
 
         .portfolio-back {
@@ -123,13 +123,16 @@ function ResidentialPage() {
         .featured-card {
           position: relative;
           width: 100%;
-          aspect-ratio: 2.5 / 1;
-          border-radius: 14px;
+          max-width: 1000px;
+          margin: 0 auto;
+          aspect-ratio: 16 / 9;
+          border-radius: 20px;
           overflow: hidden;
           cursor: pointer;
           background: #1a1a1a;
           display: block;
           text-decoration: none;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
 
         .featured-card-image {
@@ -241,18 +244,27 @@ function ResidentialPage() {
         .portfolio-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
+          gap: 30px;
+          max-width: 1200px;
+          margin: 0 auto;
         }
 
         .grid-card {
           position: relative;
-          aspect-ratio: 3 / 2;
-          border-radius: 10px;
+          aspect-ratio: 4 / 3;
+          border-radius: 16px;
           overflow: hidden;
           cursor: pointer;
           background: #1a1a1a;
           display: block;
           text-decoration: none;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+          transition: box-shadow 0.4s ease, transform 0.4s ease;
+        }
+
+        .grid-card:hover {
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+          transform: translateY(-5px);
         }
 
         .grid-card-image {
@@ -375,7 +387,7 @@ function ResidentialPage() {
 
         @media (max-width: 768px) {
           .portfolio-page {
-            padding: 80px 20px 40px;
+            padding: 100px 24px 60px;
           }
 
           .portfolio-grid {
