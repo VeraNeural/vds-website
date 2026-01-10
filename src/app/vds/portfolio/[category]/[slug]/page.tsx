@@ -915,21 +915,13 @@ export default function ImmersiveProjectPage() {
         )}
       </div>
       
-      {/* VERA Bubble - positioned in middle-right, above tags */}
-      <div style={{
-        position: 'fixed',
-        bottom: '50%',
-        right: '30px',
-        transform: 'translateY(50%)',
-        zIndex: 500,
-      }}>
-        <VeraBubble 
-          isPremium={false}
-          context="immersive"
-          projectName={project.name}
-          onUpgradeClick={() => window.location.href = '/pricing'}
-        />
-      </div>
+      {/* VERA Bubble - elegant bottom-right placement */}
+      <VeraBubble 
+        isPremium={false}
+        context="immersive"
+        projectName={project.name}
+        onUpgradeClick={() => window.location.href = '/pricing'}
+      />
     </div>
   )
 }

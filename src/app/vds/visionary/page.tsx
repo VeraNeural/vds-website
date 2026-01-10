@@ -231,6 +231,265 @@ export default function VDSVisionaryPage() {
         }
 
         /* ========================================
+           SPACE PSYCHOLOGY SECTION
+           ======================================== */
+        .vds-space-psychology {
+          min-height: 100vh;
+          padding: 120px 24px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          background: linear-gradient(180deg, transparent 0%, rgba(201, 169, 98, 0.02) 50%, transparent 100%);
+        }
+
+        .vds-sp-header {
+          text-align: center;
+          margin-bottom: 80px;
+          max-width: 700px;
+        }
+
+        .vds-sp-eyebrow {
+          font-size: 0.65rem;
+          letter-spacing: 0.5em;
+          text-transform: uppercase;
+          color: var(--vds-gold);
+          margin-bottom: 20px;
+          opacity: 0.8;
+        }
+
+        .vds-sp-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2.5rem, 6vw, 4rem);
+          font-weight: 300;
+          margin-bottom: 20px;
+        }
+
+        .vds-sp-title span {
+          color: var(--vds-gold);
+          font-style: italic;
+        }
+
+        .vds-sp-tagline {
+          font-size: 1rem;
+          font-weight: 300;
+          letter-spacing: 0.1em;
+          color: rgba(248, 246, 241, 0.7);
+          margin-bottom: 30px;
+        }
+
+        .vds-sp-desc {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.4rem;
+          font-style: italic;
+          line-height: 1.8;
+          color: rgba(248, 246, 241, 0.9);
+        }
+
+        .vds-sp-desc em {
+          color: var(--vds-gold);
+          font-style: italic;
+        }
+
+        .vds-sp-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 30px;
+          max-width: 1100px;
+          width: 100%;
+          margin-bottom: 80px;
+        }
+
+        .vds-sp-card {
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 24px;
+          padding: 40px 30px;
+          position: relative;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .vds-sp-card:hover {
+          border-color: rgba(201, 169, 98, 0.3);
+          transform: translateY(-8px);
+          background: rgba(201, 169, 98, 0.03);
+        }
+
+        .vds-sp-card-number {
+          position: absolute;
+          top: 25px;
+          right: 25px;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 3rem;
+          font-weight: 300;
+          color: var(--vds-gold);
+          opacity: 0.15;
+          line-height: 1;
+        }
+
+        .vds-sp-card-icon {
+          width: 70px;
+          height: 70px;
+          margin-bottom: 25px;
+          color: var(--vds-gold);
+        }
+
+        .vds-sp-card-icon svg {
+          width: 100%;
+          height: 100%;
+        }
+
+        .vds-sp-card-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.5rem;
+          font-weight: 400;
+          margin-bottom: 15px;
+          color: var(--vds-gold);
+        }
+
+        .vds-sp-card-desc {
+          font-size: 0.9rem;
+          font-weight: 300;
+          line-height: 1.7;
+          color: rgba(248, 246, 241, 0.7);
+          margin-bottom: 25px;
+        }
+
+        .vds-sp-card-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        .vds-sp-card-list li {
+          font-size: 0.8rem;
+          color: rgba(248, 246, 241, 0.5);
+          padding: 8px 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          padding-left: 20px;
+          position: relative;
+        }
+
+        .vds-sp-card-list li:last-child {
+          border-bottom: none;
+        }
+
+        .vds-sp-card-list li::before {
+          content: '→';
+          position: absolute;
+          left: 0;
+          color: var(--vds-gold);
+          opacity: 0.5;
+          font-size: 0.7rem;
+        }
+
+        .vds-sp-output {
+          text-align: center;
+          margin-bottom: 60px;
+          max-width: 800px;
+        }
+
+        .vds-sp-output-header {
+          margin-bottom: 40px;
+        }
+
+        .vds-sp-output-eyebrow {
+          font-size: 0.65rem;
+          letter-spacing: 0.4em;
+          text-transform: uppercase;
+          color: var(--vds-gold);
+          margin-bottom: 15px;
+          opacity: 0.7;
+        }
+
+        .vds-sp-output-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(1.5rem, 3vw, 2rem);
+          font-weight: 300;
+        }
+
+        .vds-sp-output-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+        }
+
+        .vds-sp-output-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          padding: 25px 15px;
+          background: rgba(201, 169, 98, 0.05);
+          border: 1px solid rgba(201, 169, 98, 0.1);
+          border-radius: 16px;
+          font-size: 0.85rem;
+          color: rgba(248, 246, 241, 0.8);
+          transition: all 0.3s ease;
+        }
+
+        .vds-sp-output-item:hover {
+          border-color: rgba(201, 169, 98, 0.3);
+          background: rgba(201, 169, 98, 0.08);
+        }
+
+        .vds-sp-output-icon {
+          color: var(--vds-gold);
+          font-size: 1.2rem;
+        }
+
+        .vds-sp-cta {
+          padding: 22px 60px;
+          background: linear-gradient(135deg, var(--vds-gold) 0%, #a08050 100%);
+          border: none;
+          border-radius: 100px;
+          color: var(--vds-noir);
+          font-family: 'Outfit', sans-serif;
+          font-size: 0.85rem;
+          font-weight: 500;
+          letter-spacing: 0.25em;
+          text-transform: uppercase;
+          text-decoration: none;
+          display: inline-block;
+          transition: all 0.3s ease;
+          box-shadow: 0 10px 40px rgba(201, 169, 98, 0.3);
+        }
+
+        .vds-sp-cta:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 20px 50px rgba(201, 169, 98, 0.5);
+        }
+
+        @media (max-width: 900px) {
+          .vds-sp-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+          }
+
+          .vds-sp-output-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (max-width: 600px) {
+          .vds-space-psychology {
+            padding: 80px 20px;
+          }
+
+          .vds-sp-card {
+            padding: 30px 24px;
+          }
+
+          .vds-sp-output-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .vds-sp-cta {
+            padding: 20px 40px;
+            font-size: 0.8rem;
+          }
+        }
+
+        /* ========================================
            STYLE SELECTION SECTION
            ======================================== */
         .vds-vis-styles {
@@ -677,6 +936,124 @@ export default function VDSVisionaryPage() {
           <div className="vds-vis-scroll-line"></div>
           <span className="vds-vis-scroll-text">Begin</span>
         </div>
+      </section>
+
+      {/* Space Psychology Section */}
+      <section className="vds-space-psychology">
+        <div className="vds-sp-header vds-reveal">
+          <p className="vds-sp-eyebrow">VDS × VERA</p>
+          <h2 className="vds-sp-title">
+            Space <span>Psychology™</span>
+          </h2>
+          <p className="vds-sp-tagline">Architecture that responds to the human nervous system</p>
+          <p className="vds-sp-desc">
+            We don't design spaces for how they look.<br/>
+            We design spaces for how they <em>regulate you</em>.
+          </p>
+        </div>
+
+        <div className="vds-sp-grid vds-reveal">
+          <div className="vds-sp-card">
+            <div className="vds-sp-card-number">01</div>
+            <div className="vds-sp-card-icon">
+              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="30" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                <path d="M50 25 Q70 35 70 50 Q70 65 50 75 Q30 65 30 50 Q30 35 50 25" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                <circle cx="50" cy="40" r="4" fill="currentColor"/>
+                <circle cx="40" cy="55" r="3" fill="currentColor" opacity="0.6"/>
+                <circle cx="60" cy="55" r="3" fill="currentColor" opacity="0.6"/>
+              </svg>
+            </div>
+            <h3 className="vds-sp-card-title">Nervous System Mapping</h3>
+            <p className="vds-sp-card-desc">
+              Understand how your biology responds to environmental input. Stress patterns, 
+              light sensitivity, and spatial needs decoded.
+            </p>
+            <ul className="vds-sp-card-list">
+              <li>Stress response patterns</li>
+              <li>Calming vs energizing needs</li>
+              <li>Light & sound sensitivity</li>
+              <li>Color-response tendencies</li>
+            </ul>
+          </div>
+
+          <div className="vds-sp-card">
+            <div className="vds-sp-card-number">02</div>
+            <div className="vds-sp-card-icon">
+              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="20" y="30" width="60" height="45" rx="4" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                <line x1="35" y1="30" x2="35" y2="75" stroke="currentColor" strokeWidth="1" opacity="0.4"/>
+                <line x1="65" y1="30" x2="65" y2="75" stroke="currentColor" strokeWidth="1" opacity="0.4"/>
+                <circle cx="50" cy="52" r="8" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                <circle cx="50" cy="52" r="3" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3 className="vds-sp-card-title">Lifestyle Decoding</h3>
+            <p className="vds-sp-card-desc">
+              Map how you actually move through life—not how you think you do. 
+              Rhythms, rituals, and real behavior patterns.
+            </p>
+            <ul className="vds-sp-card-list">
+              <li>Morning & evening rhythms</li>
+              <li>Work & engagement patterns</li>
+              <li>Social vs solitude needs</li>
+              <li>Movement paths through home</li>
+            </ul>
+          </div>
+
+          <div className="vds-sp-card">
+            <div className="vds-sp-card-number">03</div>
+            <div className="vds-sp-card-icon">
+              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="40" r="12" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                <circle cx="70" cy="45" r="10" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                <circle cx="45" cy="70" r="8" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                <line x1="38" y1="48" x2="62" y2="50" stroke="currentColor" strokeWidth="1" opacity="0.5"/>
+                <line x1="50" y1="63" x2="65" y2="53" stroke="currentColor" strokeWidth="1" opacity="0.5"/>
+              </svg>
+            </div>
+            <h3 className="vds-sp-card-title">Sensory Profile</h3>
+            <p className="vds-sp-card-desc">
+              Discover your sensory thresholds and tolerances. 
+              Two people can have opposite responses in the same room.
+            </p>
+            <ul className="vds-sp-card-list">
+              <li>Texture preferences</li>
+              <li>Temperature comfort</li>
+              <li>Scent associations</li>
+              <li>Visual complexity tolerance</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="vds-sp-output vds-reveal">
+          <div className="vds-sp-output-header">
+            <p className="vds-sp-output-eyebrow">The Output</p>
+            <h3 className="vds-sp-output-title">Your Space Psychology Report™</h3>
+          </div>
+          <div className="vds-sp-output-grid">
+            <div className="vds-sp-output-item">
+              <span className="vds-sp-output-icon">◈</span>
+              <span>Nervous System Type</span>
+            </div>
+            <div className="vds-sp-output-item">
+              <span className="vds-sp-output-icon">◈</span>
+              <span>Design Translation</span>
+            </div>
+            <div className="vds-sp-output-item">
+              <span className="vds-sp-output-icon">◈</span>
+              <span>Room-by-Room Insights</span>
+            </div>
+            <div className="vds-sp-output-item">
+              <span className="vds-sp-output-icon">◈</span>
+              <span>VDS Design Alignment</span>
+            </div>
+          </div>
+        </div>
+
+        <Link href="/vds/space-psychology" className="vds-sp-cta vds-interactive vds-reveal">
+          Begin Your Assessment
+        </Link>
       </section>
 
       {/* Style Selection Section */}
