@@ -1293,9 +1293,9 @@ export default function VDSHomePage() {
               <span className="hero-title-accent">Legacy</span>
             </h1>
             <p className="hero-desc">
-              Led by Julija and an elite team of world-class designers, we craft 
-              extraordinary spaces for discerning clients across the globe. From 
-              multi-million dollar residences to landmark commercial projects.
+              Founded by <strong>Julija Krajceva</strong>—designer, builder, perfectionist. 
+              She doesn't delegate dreams. From concept to completion, Julija is on site, 
+              on call, and obsessed with getting every detail right.
             </p>
             <div className="hero-buttons">
               <a href="#contact" className="btn-primary">Begin Your Project</a>
@@ -1365,49 +1365,58 @@ export default function VDSHomePage() {
             <div className="section-header">
               <div className="section-label reveal">
                 <span className="section-label-line" />
-                <span className="section-label-text">Who We Are</span>
+                <span className="section-label-text">The Visionary</span>
                 <span className="section-label-line" />
               </div>
-              <h2 className="section-title reveal reveal-delay-1">An Elite <span>Global Team</span></h2>
+              <h2 className="section-title reveal reveal-delay-1">Julija <span>Krajceva</span></h2>
             </div>
 
             <div className="about-content">
               <div className="about-text reveal reveal-delay-2">
                 <p>
-                  Vision Design Studio is led by <strong>Julija</strong>, a visionary designer whose 
-                  work spans three continents and commands the attention of the world's most 
-                  discerning clientele. With over two decades of experience and a portfolio 
-                  exceeding <strong>$2 billion</strong> in completed projects, we don't just design 
-                  spaces—we create legacies.
+                  <strong>Julija Krajceva</strong> doesn't just design spaces—she brings them to life 
+                  from first sketch to final walkthrough. As founder and creative force behind 
+                  Vision Design Studio, she is involved in every phase: concept, execution, 
+                  and delivery. When crews are on site at 6am, Julija is there. When a detail 
+                  isn't right, she fixes it herself.
                 </p>
                 <p>
-                  Our elite team speaks <strong>12 languages</strong> and brings together the finest 
-                  architects, interior designers, and landscape artists from Milan, Dubai, New York, 
-                  and beyond. We serve a select number of clients each year, ensuring every project 
-                  receives our complete dedication.
+                  Her passion is legendary. Her standards are uncompromising. But what sets Julija 
+                  apart is how she listens. Every project begins with understanding—not just what 
+                  clients want, but how they want to <em>feel</em>. She speaks <strong>five languages</strong>, 
+                  works across <strong>three continents</strong>, and treats every project, whether a 
+                  private villa or a $200 million development, with the same dedication.
                 </p>
                 <p>
-                  From private islands to penthouse collections, from royal residences to 
-                  headquarters of Fortune 100 companies—when the stakes are highest, 
-                  Vision Design Studio delivers.
+                  Humble yet relentless. Hands-on yet visionary. Julija has assembled an elite 
+                  team of architects, designers, and craftsmen who share her obsession with 
+                  excellence. Together, they've delivered over <strong>$2 billion</strong> in projects 
+                  for clients who demand nothing less than extraordinary.
+                </p>
+                <p style={{ marginTop: '30px', fontStyle: 'italic', color: 'var(--gold)' }}>
+                  "I don't hand off projects. I see them through. Every wall, every light, 
+                  every moment a client walks in for the first time—that's what I live for."
+                </p>
+                <p style={{ color: 'var(--pearl-dim)', fontSize: '0.9rem' }}>
+                  — Julija Krajceva, Founder
                 </p>
               </div>
               <div className="about-stats reveal reveal-delay-3">
                 <div className="about-stat">
                   <div className="about-stat-number">$2B+</div>
-                  <div className="about-stat-label">Project Value</div>
+                  <div className="about-stat-label">Projects Delivered</div>
                 </div>
                 <div className="about-stat">
                   <div className="about-stat-number">25+</div>
-                  <div className="about-stat-label">Years Experience</div>
+                  <div className="about-stat-label">Years Hands-On</div>
                 </div>
                 <div className="about-stat">
-                  <div className="about-stat-number">12</div>
-                  <div className="about-stat-label">Languages</div>
+                  <div className="about-stat-number">5</div>
+                  <div className="about-stat-label">Languages Spoken</div>
                 </div>
                 <div className="about-stat">
-                  <div className="about-stat-number">40+</div>
-                  <div className="about-stat-label">Countries Served</div>
+                  <div className="about-stat-number">100%</div>
+                  <div className="about-stat-label">Project Involvement</div>
                 </div>
               </div>
             </div>
