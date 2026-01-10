@@ -187,10 +187,10 @@ export default function VDSHomePage() {
         }
 
         .nav-logo {
-          height: ${scrolled ? '50px' : '70px'};
+          height: ${scrolled ? '60px' : '85px'};
           width: auto;
           transition: all 0.5s ease;
-          filter: drop-shadow(0 0 20px rgba(201, 169, 98, 0.3));
+          filter: drop-shadow(0 0 28px rgba(201, 169, 98, 0.45));
         }
 
         .nav-links {
@@ -343,7 +343,7 @@ export default function VDSHomePage() {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(3.5rem, 7vw, 6rem);
           font-weight: 300;
-          line-height: 1.05;
+          line-height: 1.14;
           margin-bottom: 30px;
           letter-spacing: -0.02em;
         }
@@ -351,6 +351,7 @@ export default function VDSHomePage() {
         .hero-title-accent {
           display: block;
           font-style: italic;
+          padding-bottom: 0.08em;
           background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
           background-size: 200% auto;
           -webkit-background-clip: text;
@@ -1172,38 +1173,71 @@ export default function VDSHomePage() {
         /* ===================== VERA BUBBLE ===================== */
         .vera-bubble {
           position: fixed;
-          bottom: 30px;
-          right: 30px;
-          width: 70px;
-          height: 70px;
+          bottom: 40px;
+          right: 40px;
+          width: 60px;
+          height: 60px;
           border-radius: 50%;
-          background: radial-gradient(circle at 30% 30%, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dark) 100%);
-          box-shadow: 0 8px 35px rgba(201, 169, 98, 0.5);
+          background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(30, 30, 30, 0.9) 100%);
+          border: 1px solid rgba(201, 169, 98, 0.3);
+          box-shadow: 
+            0 10px 40px rgba(0, 0, 0, 0.4),
+            0 0 20px rgba(201, 169, 98, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
           cursor: pointer;
           z-index: 1000;
           display: flex;
           align-items: center;
           justify-content: center;
           text-decoration: none;
-          transition: all 0.4s ease;
-          animation: breathe 3s ease-in-out infinite;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          overflow: hidden;
+        }
+
+        .vera-bubble::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 35px;
+          height: 35px;
+          background: radial-gradient(circle, rgba(201, 169, 98, 0.4) 0%, transparent 70%);
+          border-radius: 50%;
+          animation: bubbleGlow 3s ease-in-out infinite;
         }
 
         .vera-bubble:hover {
-          transform: scale(1.1);
-          box-shadow: 0 15px 50px rgba(201, 169, 98, 0.6);
+          transform: translateY(-3px);
+          border-color: rgba(201, 169, 98, 0.6);
+          box-shadow: 
+            0 15px 50px rgba(0, 0, 0, 0.5),
+            0 0 30px rgba(201, 169, 98, 0.25),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .vera-bubble img {
+          width: 30px;
+          height: 30px;
+          object-fit: contain;
+          position: relative;
+          z-index: 2;
+          opacity: 0.9;
+          filter: brightness(1.1);
         }
 
         .vera-bubble-tooltip {
           position: absolute;
-          right: 85px;
-          background: var(--noir-light);
-          padding: 14px 22px;
-          border-radius: 12px;
+          right: 75px;
+          background: linear-gradient(135deg, rgba(20, 20, 20, 0.98) 0%, rgba(30, 30, 30, 0.95) 100%);
+          padding: 12px 20px;
+          border-radius: 10px;
           border: 1px solid rgba(201, 169, 98, 0.2);
-          font-size: 0.85rem;
+          font-size: 0.8rem;
+          font-weight: 400;
+          letter-spacing: 0.1em;
           color: var(--gold);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
           white-space: nowrap;
           opacity: 0;
           transform: translateX(10px);
@@ -1214,6 +1248,27 @@ export default function VDSHomePage() {
         .vera-bubble:hover .vera-bubble-tooltip {
           opacity: 1;
           transform: translateX(0);
+        }
+
+        @keyframes bubbleGlow {
+          0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        @media (max-width: 768px) {
+          .vera-bubble {
+            width: 50px;
+            height: 50px;
+            bottom: 24px;
+            right: 24px;
+          }
+          .vera-bubble img {
+            width: 24px;
+            height: 24px;
+          }
+          .vera-bubble-tooltip {
+            display: none;
+          }
         }
 
         /* ===================== RESPONSIVE ===================== */
@@ -1239,7 +1294,7 @@ export default function VDSHomePage() {
         @media (max-width: 768px) {
           .nav { padding: 15px 24px; }
           .nav-links { display: none; }
-          .nav-logo { height: 45px; }
+          .nav-logo { height: 54px; }
           .section { padding: 80px 24px; }
           .hero { padding: 0 24px; }
           .hero-content { max-width: 100%; }
@@ -1252,8 +1307,6 @@ export default function VDSHomePage() {
           .form-row { grid-template-columns: 1fr; }
           .footer { flex-direction: column; gap: 30px; text-align: center; }
           .footer-links { flex-wrap: wrap; justify-content: center; }
-          .vera-bubble { width: 60px; height: 60px; bottom: 20px; right: 20px; }
-          .vera-bubble-tooltip { display: none; }
         }
       `}</style>
 
@@ -1267,16 +1320,15 @@ export default function VDSHomePage() {
         <nav className="nav">
           <img src="/vds-logo.gif" alt="Vision Design Studio" className="nav-logo" />
           <div className="nav-links">
-            <a href="#work" className="nav-link">Portfolio</a>
-            <a href="#gallery" className="nav-link">Gallery</a>
-            <a href="#testimonials" className="nav-link">Reviews</a>
-            <a href="#contact" className="nav-link">Contact</a>
-            <a href="https://veraneural.ai/vds" className="nav-cta">Enter Studio</a>
+            <a href="/vds/portfolio" className="nav-link">Portfolio</a>
+            <a href="#philosophy" className="nav-link">Philosophy</a>
+            <a href="#legacy" className="nav-link">Legacy</a>
+            <a href="/vds" className="nav-cta">Immersive Experience</a>
           </div>
         </nav>
 
         {/* Hero */}
-        <section className="hero">
+        <section className="hero" id="legacy">
           <div className="hero-bg">
             <img src={images.hero} alt="" className="hero-bg-image" />
             <div className="hero-glow" />
@@ -1315,16 +1367,17 @@ export default function VDSHomePage() {
           <div className="container">
             <div className="vds-content">
               <div className="vds-text">
-                <div className="partnership reveal">Now Featuring AI-Powered Design</div>
-                <h2 className="reveal reveal-delay-1">The Virtual <span>Design Studio</span></h2>
+                <div className="partnership reveal">Virtual Design Studio</div>
+                <h2 className="reveal reveal-delay-1">See Your Space <span>Before It Exists</span></h2>
                 <p className="reveal reveal-delay-2">
-                  Experience your space before construction begins. Our proprietary Virtual Design 
-                  Studio allows you to walk through your project in stunning 3D, making real-time 
-                  adjustments until every detail is perfect.
+                  Walk through your project before construction begins. Our proprietary 
+                  Virtual Design Studio lets you experience every room, every angle, 
+                  every detail in stunning 3D. Make changes in real-time until perfection.
                 </p>
                 <p className="reveal reveal-delay-3">
-                  Powered by VERA, our AI design assistant, you can explore materials, lighting, 
-                  and layouts with unprecedented precision. A Vision Design Studio exclusive.
+                  This is how Julija works with her clients—no surprises, no compromises. 
+                  You see exactly what you're getting, and you shape it together until 
+                  it feels like home.
                 </p>
                 <div className="vds-features reveal reveal-delay-4">
                   <div className="vds-feature">
@@ -1336,12 +1389,12 @@ export default function VDSHomePage() {
                     <p>Adjust materials, colors, and layouts instantly.</p>
                   </div>
                   <div className="vds-feature">
-                    <h4>AI-Assisted</h4>
-                    <p>VERA helps refine your vision with intelligent suggestions.</p>
+                    <h4>Julija's Process</h4>
+                    <p>Collaborate directly with the team who builds your vision.</p>
                   </div>
                 </div>
                 <div style={{ marginTop: '50px' }} className="reveal">
-                  <a href="https://veraneural.ai/vds" className="btn-primary">Experience the Studio</a>
+                  <a href="/vds" className="btn-primary">Experience the Studio</a>
                 </div>
               </div>
               <div className="vds-images reveal">
@@ -1644,17 +1697,18 @@ export default function VDSHomePage() {
         <footer className="footer">
           <img src="/vds-logo.gif" alt="Vision Design Studio" className="footer-logo" />
           <div className="footer-links">
-            <a href="#work" className="footer-link">Portfolio</a>
-            <a href="#gallery" className="footer-link">Gallery</a>
-            <a href="#testimonials" className="footer-link">Reviews</a>
-            <a href="https://veraneural.ai/vds" className="footer-link">Enter Studio</a>
+            <a href="/vds/portfolio" className="footer-link">Portfolio</a>
+            <a href="#philosophy" className="footer-link">Philosophy</a>
+            <a href="#legacy" className="footer-link">Legacy</a>
+            <a href="/vds" className="footer-link">Immersive Experience</a>
           </div>
           <p className="footer-copy">© {new Date().getFullYear()} Vision Design Studio. All rights reserved.</p>
         </footer>
 
         {/* VERA Bubble */}
         <a href="https://veraneural.ai/sanctuary" target="_blank" rel="noopener noreferrer" className="vera-bubble">
-          <span className="vera-bubble-tooltip">Chat with VERA</span>
+          <img src="/vera-icon.png" alt="VERA" />
+          <span className="vera-bubble-tooltip">Space Psychology</span>
         </a>
       </div>
     </>
