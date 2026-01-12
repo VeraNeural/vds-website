@@ -67,8 +67,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
   };
 
   const handleTalkToVera = () => {
-    setIsEntering(true);
-    setTimeout(() => router.push('/chat'), 600);
+    window.location.href = 'https://veraneural.ai/chat-exact';
   };
 
   const breathValue = Math.sin(breathPhase * 0.0628) * 0.5 + 0.5;
@@ -98,7 +97,8 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
         .vignette {
           position: absolute;
           inset: 0;
-          background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,${isDark ? 0.4 : 0.15}) 100%);
+          background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,${isDark ? 0.4 : 0.15}) 100%)),
+                      radial-gradient(ellipse 80% 50% at 50% 60%, rgba(138, 100, 200, 0.08) 0%, transparent 50%);
           pointer-events: none;
           z-index: 5;
         }
@@ -1047,10 +1047,10 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
         /* ============ RESPONSIVE ============ */
 
         @media (max-width: 768px) {
-          .greeting-area { top: 28%; }
+          .greeting-area { top: 28%; left: 50%; transform: translateX(-50%); }
           .greeting { font-size: clamp(1.4rem, 4.5vw, 1.8rem); }
           .time-essence { font-size: 0.6rem; letter-spacing: 0.2em; }
-          .vera-presence { top: 38%; }
+          .vera-presence { top: 55%; left: 50%; transform: translateX(-50%); opacity: 0 !important; pointer-events: none; }
           .orb { width: 80px; height: 80px; }
           .orb-ring { inset: -12px; }
           .orb-ring-outer { inset: -25px; }
@@ -1060,14 +1060,15 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           .portal-icon { width: 22px; height: 22px; }
           .portal-name { font-size: 0.6rem; }
           .portal-essence { font-size: 0.45rem; }
-          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group, .ceiling-light { opacity: 0.7; transform: scale(0.9); }
+          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group { opacity: 0.8; transform: scale(0.9) translateX(-15%); }
+          .ceiling-light { opacity: 0.7; }
         }
 
         @media (max-width: 480px) {
-          .greeting-area { top: 22%; padding: 0 15%; }
+          .greeting-area { top: 22%; padding: 0 15%; left: 50%; transform: translateX(-50%); }
           .greeting { font-size: clamp(1.2rem, 4.5vw, 1.5rem); }
           .time-essence { font-size: 0.5rem; margin-top: 6px; letter-spacing: 0.15em; }
-          .vera-presence { top: 32%; gap: 14px; }
+          .vera-presence { top: 32%; left: 50%; transform: translateX(-50%); opacity: 0 !important; pointer-events: none; gap: 14px; }
           .orb { width: 60px; height: 60px; }
           .orb-ring { inset: -8px; }
           .orb-ring-outer { inset: -16px; }
@@ -1078,10 +1079,11 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           .portal-icon { width: 18px; height: 18px; }
           .portal-name { font-size: 0.55rem; }
           .portal-essence { display: none; }
-          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group { opacity: 0.6; transform: scale(0.8); }
+          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group { opacity: 0.6; transform: scale(0.8) translateX(-20%); }
           .ceiling-light { opacity: 0.3; }
           .bottom-bar { flex-direction: column; align-items: center; }
           .action-btn { width: 100%; max-width: 280px; padding: 14px 24px; font-size: 0.8rem; }
+          .action-secondary { display: none; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1260,8 +1262,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
       </div>
 
       <div className="bottom-bar">
-        <button className="action-btn action-primary" onClick={handleTalkToVera}>Talk to VERA</button>
-        <button className="action-btn action-secondary" onClick={() => handlePortalEnter('zen')}>Begin Breathing</button>
+        <a href="https://veraneural.ai/chat-exact" target="_blank" rel="noopener noreferrer" className="action-btn action-primary" style={{ textDecoration: 'none', display: 'inline-block', width: 'auto' }}>Talk to VERA</a>
       </div>
     </div>
   );
