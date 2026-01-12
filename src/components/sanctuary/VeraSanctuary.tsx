@@ -648,8 +648,9 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
 
         .floor-lamp-group { 
           position: absolute; 
-          bottom: 24%; 
-          left: 8%; 
+          bottom: 28%; 
+          left: 12%; 
+          z-index: 25;
         }
 
         .floor-lamp {
@@ -879,7 +880,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
 
         .greeting-area {
           position: absolute;
-          top: 60%;
+          top: 35%;
           left: 0;
           right: 0;
           text-align: center;
@@ -1050,7 +1051,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
         /* ============ RESPONSIVE ============ */
 
         @media (max-width: 768px) {
-          .greeting-area { top: 60%; }
+          .greeting-area { top: 35%; }
           .greeting { font-size: clamp(1.4rem, 4.5vw, 1.8rem); color: ${isDark ? 'rgba(255, 255, 255, 0.65)' : 'rgba(42, 42, 42, 0.55)'}; }
           .time-essence { font-size: 0.6rem; letter-spacing: 0.2em; color: ${isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.2)'}; }
           .vera-presence { top: 55%; left: 50%; transform: translateX(-50%); opacity: 0 !important; pointer-events: none; }
@@ -1072,7 +1073,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
         }
 
         @media (max-width: 480px) {
-          .greeting-area { top: 60%; padding: 0 15%; left: 0; transform: none; }
+          .greeting-area { top: 35%; padding: 0 15%; left: 0; transform: none; }
           .greeting { font-size: clamp(1.2rem, 4.5vw, 1.5rem); color: ${isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(42, 42, 42, 0.5)'}; }
           .time-essence { font-size: 0.5rem; margin-top: 6px; letter-spacing: 0.15em; color: ${isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.15)'}; }
           .vera-presence { top: 32%; left: auto; right: 24px; transform: none; opacity: 0 !important; pointer-events: none; gap: 14px; }
