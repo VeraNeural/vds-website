@@ -21,6 +21,7 @@ const ROOMS: Room[] = [
   { id: 'bedroom', name: 'Rest Chamber', essence: 'Embrace sleep' },
   { id: 'studio', name: 'Design Studio', essence: 'Create beauty' },
   { id: 'journal', name: 'Journal Nook', essence: 'Reflect deeply' },
+  { id: 'pulse', name: 'Pulse', essence: 'Connect with others' },
 ];
 
 export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryProps) {
@@ -989,6 +990,12 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
         .lines-2 { top: 14px; }
         .lines-3 { top: 18px; }
 
+        .icon-heart { position: absolute; top: 4px; left: 5px; width: 18px; height: 18px; }
+        .heart-top { position: absolute; width: 8px; height: 8px; border: 2px solid ${isDark ? 'rgba(220, 140, 160, 0.7)' : 'rgba(180, 100, 120, 0.6)'}; border-radius: 50% 50% 0 0; }
+        .heart-top-left { left: 0; top: 0; }
+        .heart-top-right { right: 0; top: 0; }
+        .heart-bottom { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid ${isDark ? 'rgba(220, 140, 160, 0.7)' : 'rgba(180, 100, 120, 0.6)'}; }
+
         .portal-name { font-size: 0.7rem; font-weight: 500; color: ${isDark ? '#ffffff' : '#2a2a2a'}; }
         .portal-essence { font-size: 0.5rem; color: ${isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.35)'}; letter-spacing: 0.1em; text-transform: uppercase; }
 
@@ -1243,6 +1250,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
                 {room.id === 'bedroom' && <div className="icon-moon" />}
                 {room.id === 'studio' && <><div className="icon-frame" /><div className="icon-stand" /></>}
                 {room.id === 'journal' && <><div className="icon-page" /><div className="icon-lines lines-1" /><div className="icon-lines lines-2" /><div className="icon-lines lines-3" /></>}
+                {room.id === 'pulse' && <><div className="icon-heart"><div className="heart-top heart-top-left" /><div className="heart-top heart-top-right" /><div className="heart-bottom" /></div></>}
               </div>
               <span className="portal-name">{room.name}</span>
               <span className="portal-essence">{room.essence}</span>

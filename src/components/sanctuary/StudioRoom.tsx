@@ -49,6 +49,7 @@ export default function StudioRoom({ onBack, onLaunchVDS, onOpenProject, onSelec
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<'create' | 'projects'>('create');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night'>('afternoon');
 
   // Floating particles - deterministic
   const [particles] = useState(() =>
@@ -64,8 +65,23 @@ export default function StudioRoom({ onBack, onLaunchVDS, onOpenProject, onSelec
   );
 
   useEffect(() => {
+    // Determine time of day
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 12) {
+      setTimeOfDay('morning');
+    } else if (hour >= 12 && hour < 17) {
+      setTimeOfDay('afternoon');
+    } else if (hour >= 17 && hour < 20) {
+      setTimeOfDay('evening');
+    } else {
+      setTimeOfDay('night');
+    }
     setTimeout(() => setIsLoaded(true), 100);
   }, []);
+
+  const isDay = timeOfDay === 'morning' || timeOfDay === 'afternoon';
+  const isEvening = timeOfDay === 'evening';
+  const isNight = timeOfDay === 'night';
 
   const handleCategoryClick = (categoryId: string) => {
     setSelectedCategory(categoryId);
@@ -196,51 +212,232 @@ export default function StudioRoom({ onBack, onLaunchVDS, onOpenProject, onSelec
           background-size: 40px 40px;
         }
 
-        /* ============ WINDOW ============ */
+        /* ============ WINDOW - SMALLER WITH DAY/NIGHT ============ */
         .window-container {
           position: absolute;
-          top: 6%;
-          right: 8%;
-          width: 14%;
-          max-width: 140px;
-          height: 34%;
+          top: 5%;
+          right: 4%;
+          width: 16%;
+          max-width: 160px;
+          height: 38%;
         }
 
         .window {
           width: 100%;
           height: 100%;
-          background: linear-gradient(180deg,
-            rgba(35, 30, 55, 0.8) 0%,
-            rgba(45, 40, 68, 0.7) 50%,
-            rgba(35, 30, 55, 0.8) 100%);
-          border: 4px solid rgba(60, 52, 80, 0.85);
+          border: 5px solid rgba(55, 48, 70, 0.95);
           border-radius: 4px;
           box-shadow:
-            inset 0 0 35px rgba(139, 92, 246, 0.06),
-            0 0 25px rgba(0, 0, 0, 0.3);
+            0 0 30px rgba(0, 0, 0, 0.3),
+            0 10px 35px rgba(0, 0, 0, 0.25);
           overflow: hidden;
+          position: relative;
         }
 
-        .window-star {
+        /* Day sky */
+        .day-sky {
           position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, 
+            rgba(135, 185, 230, 1) 0%, 
+            rgba(175, 210, 245, 1) 40%, 
+            rgba(220, 235, 250, 1) 100%);
+          opacity: ${isDay ? 1 : 0};
+          transition: opacity 0.5s ease;
+        }
+
+        /* Sun */
+        .sun {
+          position: absolute;
+          top: 18%;
+          right: 22%;
+          width: 28px;
+          height: 28px;
+          background: radial-gradient(circle, 
+            rgba(255, 255, 240, 1) 0%, 
+            rgba(255, 250, 200, 0.9) 40%, 
+            rgba(255, 240, 150, 0.4) 70%, 
+            transparent 100%);
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.8);
-          animation: twinkle 4s ease-in-out infinite;
+          box-shadow: 0 0 50px rgba(255, 250, 200, 0.6);
+          opacity: ${isDay ? 1 : 0};
+          transition: opacity 0.5s ease;
+        }
+
+        /* Clouds */
+        .cloud {
+          position: absolute;
+          background: rgba(255, 255, 255, 0.85);
+          border-radius: 20px;
+          opacity: ${isDay ? 1 : 0};
+          transition: opacity 0.5s ease;
+        }
+
+        .cloud::before, .cloud::after {
+          content: '';
+          position: absolute;
+          background: inherit;
+          border-radius: 50%;
+        }
+
+        .cloud-1 {
+          top: 15%;
+          left: 12%;
+          width: 30px;
+          height: 12px;
+        }
+        .cloud-1::before { width: 15px; height: 15px; top: -8px; left: 5px; }
+        .cloud-1::after { width: 12px; height: 12px; top: -5px; right: 5px; }
+
+        .cloud-2 {
+          top: 35%;
+          left: 50%;
+          width: 25px;
+          height: 10px;
+        }
+        .cloud-2::before { width: 12px; height: 12px; top: -6px; left: 4px; }
+        .cloud-2::after { width: 10px; height: 10px; top: -4px; right: 4px; }
+
+        /* Night sky */
+        .night-sky {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg,
+            rgba(12, 15, 30, 1) 0%,
+            rgba(20, 28, 50, 1) 40%,
+            rgba(35, 45, 70, 1) 100%);
+          opacity: ${isNight ? 1 : 0};
+          transition: opacity 0.5s ease;
+        }
+
+        /* Crescent Moon */
+        .moon {
+          position: absolute;
+          top: 15%;
+          right: 20%;
+          width: 24px;
+          height: 24px;
+          background: transparent;
+          border-radius: 50%;
+          box-shadow: 8px -2px 0 0 rgba(255, 255, 245, 0.95);
+          opacity: ${isNight ? 1 : 0};
+          transition: opacity 0.5s ease;
+        }
+
+        .moon-glow {
+          position: absolute;
+          top: 12%;
+          right: 15%;
+          width: 40px;
+          height: 40px;
+          background: radial-gradient(circle,
+            rgba(255, 255, 245, 0.15) 0%,
+            transparent 70%);
+          opacity: ${isNight ? 1 : 0};
+        }
+
+        /* Stars */
+        .star {
+          position: absolute;
+          background: rgba(255, 255, 255, 0.9);
+          border-radius: 50%;
+          opacity: ${isNight ? 1 : 0};
+          animation: twinkle 3s ease-in-out infinite;
         }
 
         @keyframes twinkle {
-          0%, 100% { opacity: 0.3; transform: scale(1); }
-          50% { opacity: 0.8; transform: scale(1.2); }
+          0%, 100% { opacity: ${isNight ? 0.4 : 0}; transform: scale(1); }
+          50% { opacity: ${isNight ? 1 : 0}; transform: scale(1.2); }
         }
 
+        /* Shooting Star */
+        .shooting-star {
+          position: absolute;
+          top: 25%;
+          left: 15%;
+          width: 2px;
+          height: 2px;
+          background: white;
+          border-radius: 50%;
+          opacity: ${isNight ? 1 : 0};
+          animation: shoot 4s ease-in-out infinite;
+        }
+
+        .shooting-star::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 35px;
+          height: 1px;
+          background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, transparent 100%);
+          transform: rotate(-35deg);
+          transform-origin: left center;
+        }
+
+        @keyframes shoot {
+          0%, 100% { 
+            transform: translate(0, 0); 
+            opacity: 0;
+          }
+          5% {
+            opacity: ${isNight ? 1 : 0};
+          }
+          15% { 
+            transform: translate(40px, 25px); 
+            opacity: 0;
+          }
+          16%, 99% {
+            opacity: 0;
+          }
+        }
+
+        /* Window landscape */
+        .window-hills {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 30%;
+        }
+
+        .window-hill {
+          position: absolute;
+          bottom: 0;
+          border-radius: 50% 50% 0 0;
+        }
+
+        .window-hill-1 {
+          left: -15%;
+          width: 55%;
+          height: 70%;
+          background: ${isDay 
+            ? 'linear-gradient(180deg, rgba(85, 140, 85, 0.9) 0%, rgba(65, 115, 65, 1) 100%)'
+            : 'linear-gradient(180deg, rgba(25, 35, 45, 0.95) 0%, rgba(18, 25, 35, 1) 100%)'};
+        }
+
+        .window-hill-2 {
+          right: -15%;
+          width: 60%;
+          height: 85%;
+          background: ${isDay 
+            ? 'linear-gradient(180deg, rgba(75, 130, 75, 0.9) 0%, rgba(55, 105, 55, 1) 100%)'
+            : 'linear-gradient(180deg, rgba(20, 30, 40, 0.95) 0%, rgba(15, 22, 32, 1) 100%)'};
+        }
+
+        /* Window frame */
         .window-frame-v {
           position: absolute;
           top: 0;
           left: 50%;
           transform: translateX(-50%);
-          width: 3px;
+          width: 4px;
           height: 100%;
-          background: rgba(60, 52, 80, 0.85);
+          background: linear-gradient(90deg,
+            rgba(50, 44, 65, 0.95) 0%,
+            rgba(65, 58, 80, 0.98) 50%,
+            rgba(50, 44, 65, 0.95) 100%);
+          z-index: 5;
         }
 
         .window-frame-h {
@@ -249,96 +446,487 @@ export default function StudioRoom({ onBack, onLaunchVDS, onOpenProject, onSelec
           left: 0;
           transform: translateY(-50%);
           width: 100%;
-          height: 3px;
-          background: rgba(60, 52, 80, 0.85);
+          height: 4px;
+          background: linear-gradient(180deg,
+            rgba(50, 44, 65, 0.95) 0%,
+            rgba(65, 58, 80, 0.98) 50%,
+            rgba(50, 44, 65, 0.95) 100%);
+          z-index: 5;
         }
 
-        /* ============ EASEL ============ */
+        .window-sill {
+          position: absolute;
+          bottom: -8px;
+          left: -6px;
+          right: -6px;
+          height: 10px;
+          background: linear-gradient(180deg,
+            rgba(60, 52, 75, 0.98) 0%,
+            rgba(50, 44, 65, 0.95) 100%);
+          border-radius: 0 0 3px 3px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ============ MONA LISA FRAME (Wall Art) - LARGER & ZEN ============ */
+        .wall-art {
+          position: absolute;
+          top: 8%;
+          left: 12%;
+          width: 130px;
+          height: 170px;
+        }
+
+        .frame-outer {
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg,
+            rgba(160, 135, 95, 0.95) 0%,
+            rgba(140, 115, 75, 0.98) 25%,
+            rgba(125, 100, 60, 0.95) 50%,
+            rgba(140, 115, 75, 0.98) 75%,
+            rgba(160, 135, 95, 0.95) 100%);
+          border-radius: 2px;
+          padding: 10px;
+          box-shadow: 
+            0 10px 40px rgba(0, 0, 0, 0.35),
+            inset 0 1px 0 rgba(200, 180, 140, 0.3),
+            inset 0 -1px 0 rgba(80, 65, 40, 0.3);
+        }
+
+        .frame-inner {
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg,
+            rgba(110, 90, 55, 0.95) 0%,
+            rgba(125, 100, 65, 0.98) 50%,
+            rgba(110, 90, 55, 0.95) 100%);
+          padding: 5px;
+          box-shadow: 
+            inset 0 2px 5px rgba(0, 0, 0, 0.25),
+            inset 0 -1px 2px rgba(160, 140, 100, 0.2);
+        }
+
+        .painting-canvas {
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(180deg,
+            rgba(58, 48, 35, 1) 0%,
+            rgba(52, 42, 30, 1) 20%,
+            rgba(65, 55, 40, 1) 40%,
+            rgba(48, 38, 28, 1) 70%,
+            rgba(42, 32, 24, 1) 100%);
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* Mona Lisa silhouette suggestion */
+        .painting-figure {
+          position: absolute;
+          top: 12%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 65px;
+          height: 95px;
+        }
+
+        .figure-head {
+          width: 28px;
+          height: 34px;
+          background: radial-gradient(ellipse at 50% 40%,
+            rgba(185, 160, 130, 0.85) 0%,
+            rgba(165, 140, 110, 0.8) 60%,
+            rgba(145, 120, 90, 0.75) 100%);
+          border-radius: 50% 50% 45% 45%;
+          margin: 0 auto;
+        }
+
+        .figure-hair {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 34px;
+          height: 22px;
+          background: rgba(32, 24, 18, 0.85);
+          border-radius: 50% 50% 40% 40%;
+        }
+
+        .figure-body {
+          width: 55px;
+          height: 60px;
+          background: linear-gradient(180deg,
+            rgba(42, 35, 26, 0.85) 0%,
+            rgba(52, 42, 30, 0.8) 50%,
+            rgba(38, 30, 22, 0.85) 100%);
+          border-radius: 30% 30% 0 0;
+          margin: 2px auto 0;
+        }
+
+        .figure-hands {
+          position: absolute;
+          bottom: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 42px;
+          height: 14px;
+          background: rgba(175, 150, 120, 0.65);
+          border-radius: 40%;
+        }
+
+        /* Painting varnish/age effect */
+        .painting-varnish {
+          position: absolute;
+          inset: 0;
+          background: 
+            radial-gradient(ellipse at 30% 20%, rgba(255, 240, 200, 0.06) 0%, transparent 50%),
+            linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, transparent 30%, rgba(0, 0, 0, 0.12) 100%);
+        }
+
+        /* ============ SCULPTURE - CLASSICAL GREEK/ROMAN ============ */
+        .sculpture {
+          position: absolute;
+          bottom: 9%;
+          left: 4%;
+        }
+
+        /* Marble Pedestal */
+        .pedestal {
+          width: 50px;
+          height: 70px;
+          background: linear-gradient(90deg,
+            rgba(165, 160, 155, 0.95) 0%,
+            rgba(195, 190, 185, 0.98) 15%,
+            rgba(215, 212, 208, 0.99) 30%,
+            rgba(205, 200, 195, 0.98) 50%,
+            rgba(185, 180, 175, 0.96) 70%,
+            rgba(165, 160, 155, 0.95) 85%,
+            rgba(150, 145, 140, 0.93) 100%);
+          position: relative;
+          box-shadow: 
+            4px 0 15px rgba(0, 0, 0, 0.2),
+            -2px 0 10px rgba(0, 0, 0, 0.1),
+            0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Pedestal molding top */
+        .pedestal-crown {
+          position: absolute;
+          top: -8px;
+          left: -6px;
+          right: -6px;
+          height: 8px;
+          background: linear-gradient(180deg,
+            rgba(225, 222, 218, 0.98) 0%,
+            rgba(205, 200, 195, 0.95) 50%,
+            rgba(185, 180, 175, 0.92) 100%);
+          border-radius: 2px 2px 0 0;
+          box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .pedestal-crown::after {
+          content: '';
+          position: absolute;
+          bottom: -3px;
+          left: 2px;
+          right: 2px;
+          height: 3px;
+          background: linear-gradient(180deg,
+            rgba(195, 190, 185, 0.9) 0%,
+            rgba(175, 170, 165, 0.85) 100%);
+        }
+
+        /* Pedestal base molding */
+        .pedestal-base {
+          position: absolute;
+          bottom: -6px;
+          left: -8px;
+          right: -8px;
+          height: 8px;
+          background: linear-gradient(180deg,
+            rgba(185, 180, 175, 0.95) 0%,
+            rgba(200, 195, 190, 0.98) 50%,
+            rgba(175, 170, 165, 0.95) 100%);
+          border-radius: 0 0 2px 2px;
+        }
+
+        .pedestal-base::before {
+          content: '';
+          position: absolute;
+          top: -4px;
+          left: 4px;
+          right: 4px;
+          height: 4px;
+          background: linear-gradient(180deg,
+            rgba(175, 170, 165, 0.9) 0%,
+            rgba(190, 185, 180, 0.95) 100%);
+        }
+
+        /* Classical Female Torso/Venus */
+        .torso {
+          position: absolute;
+          bottom: 70px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        /* Head */
+        .sculpture-head {
+          width: 20px;
+          height: 24px;
+          background: linear-gradient(135deg,
+            rgba(235, 232, 228, 0.99) 0%,
+            rgba(220, 215, 210, 0.97) 25%,
+            rgba(205, 200, 195, 0.95) 50%,
+            rgba(190, 185, 180, 0.93) 75%,
+            rgba(175, 170, 165, 0.9) 100%);
+          border-radius: 50% 50% 45% 45%;
+          margin: 0 auto;
+          position: relative;
+          box-shadow:
+            inset 3px 3px 8px rgba(255, 255, 255, 0.3),
+            inset -2px -2px 6px rgba(0, 0, 0, 0.08),
+            2px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Classical hair bun */
+        .sculpture-hair {
+          position: absolute;
+          top: -2px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 22px;
+          height: 14px;
+          background: linear-gradient(180deg,
+            rgba(200, 195, 190, 0.95) 0%,
+            rgba(185, 180, 175, 0.9) 100%);
+          border-radius: 50% 50% 30% 30%;
+        }
+
+        .hair-bun {
+          position: absolute;
+          top: 2px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 12px;
+          height: 10px;
+          background: radial-gradient(ellipse at 50% 60%,
+            rgba(210, 205, 200, 0.95) 0%,
+            rgba(185, 180, 175, 0.9) 100%);
+          border-radius: 50%;
+        }
+
+        /* Neck */
+        .sculpture-neck {
+          width: 10px;
+          height: 14px;
+          background: linear-gradient(90deg,
+            rgba(195, 190, 185, 0.95) 0%,
+            rgba(220, 215, 210, 0.98) 40%,
+            rgba(210, 205, 200, 0.96) 60%,
+            rgba(190, 185, 180, 0.93) 100%);
+          margin: 0 auto;
+          border-radius: 0 0 20% 20%;
+        }
+
+        /* Shoulders and upper torso */
+        .sculpture-shoulders {
+          width: 42px;
+          height: 18px;
+          background: linear-gradient(180deg,
+            rgba(215, 210, 205, 0.98) 0%,
+            rgba(225, 220, 215, 0.97) 30%,
+            rgba(210, 205, 200, 0.95) 100%);
+          border-radius: 50% 50% 30% 30%;
+          margin: -2px auto 0;
+          position: relative;
+          box-shadow:
+            inset 0 5px 10px rgba(255, 255, 255, 0.2),
+            0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Draped fabric suggestion */
+        .sculpture-drape {
+          position: absolute;
+          top: 14px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 38px;
+          height: 45px;
+          background: linear-gradient(180deg,
+            rgba(210, 205, 200, 0.95) 0%,
+            rgba(220, 215, 210, 0.97) 20%,
+            rgba(200, 195, 190, 0.93) 50%,
+            rgba(215, 210, 205, 0.95) 80%,
+            rgba(195, 190, 185, 0.9) 100%);
+          border-radius: 30% 30% 40% 40%;
+          box-shadow:
+            inset 4px 0 12px rgba(255, 255, 255, 0.15),
+            inset -4px 0 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Fabric folds */
+        .drape-fold {
+          position: absolute;
+          background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(180, 175, 170, 0.3) 50%,
+            transparent 100%);
+          border-radius: 50%;
+        }
+
+        .fold-1 {
+          top: 8px;
+          left: 8px;
+          width: 4px;
+          height: 30px;
+          transform: rotate(-5deg);
+        }
+
+        .fold-2 {
+          top: 10px;
+          right: 10px;
+          width: 3px;
+          height: 25px;
+          transform: rotate(8deg);
+        }
+
+        .fold-3 {
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 3px;
+          height: 20px;
+        }
+
+        /* Broken arm stump (classical style) */
+        .arm-stump {
+          position: absolute;
+          top: 2px;
+          width: 8px;
+          height: 12px;
+          background: linear-gradient(180deg,
+            rgba(215, 210, 205, 0.95) 0%,
+            rgba(195, 190, 185, 0.9) 100%);
+          border-radius: 40%;
+        }
+
+        .arm-left {
+          left: -4px;
+          transform: rotate(-25deg);
+        }
+
+        .arm-right {
+          right: -4px;
+          transform: rotate(25deg);
+        }
+
+        /* ============ EASEL - REFINED ============ */
         .easel-container {
           position: absolute;
-          bottom: 12%;
-          left: 6%;
-          width: 110px;
-          height: 150px;
+          bottom: 11%;
+          left: 16%;
+          width: 100px;
+          height: 140px;
         }
 
         .easel-leg {
           position: absolute;
           bottom: 0;
-          width: 5px;
-          height: 110px;
-          background: linear-gradient(180deg,
-            rgba(120, 100, 80, 0.85) 0%,
-            rgba(90, 75, 60, 0.9) 100%);
-          border-radius: 2px;
+          width: 4px;
+          height: 100px;
+          background: linear-gradient(90deg,
+            rgba(90, 70, 50, 0.95) 0%,
+            rgba(120, 95, 70, 0.98) 30%,
+            rgba(105, 82, 60, 0.95) 70%,
+            rgba(85, 65, 45, 0.92) 100%);
+          border-radius: 1px;
+          box-shadow: 1px 0 3px rgba(0, 0, 0, 0.2);
         }
 
         .easel-leg-left {
-          left: 20px;
-          transform: rotate(-12deg);
+          left: 18px;
+          transform: rotate(-10deg);
           transform-origin: bottom center;
         }
 
         .easel-leg-right {
-          right: 20px;
-          transform: rotate(12deg);
+          right: 18px;
+          transform: rotate(10deg);
           transform-origin: bottom center;
         }
 
         .easel-leg-back {
           left: 50%;
           transform: translateX(-50%);
-          height: 100px;
+          height: 90px;
+          width: 3px;
         }
 
         .easel-support {
           position: absolute;
-          bottom: 50px;
-          left: 18px;
-          right: 18px;
-          height: 4px;
-          background: rgba(110, 90, 70, 0.85);
-          border-radius: 2px;
+          bottom: 45px;
+          left: 15px;
+          right: 15px;
+          height: 3px;
+          background: linear-gradient(90deg,
+            rgba(95, 75, 55, 0.9) 0%,
+            rgba(115, 90, 65, 0.95) 50%,
+            rgba(95, 75, 55, 0.9) 100%);
+          border-radius: 1px;
         }
 
         .easel-tray {
           position: absolute;
-          bottom: 46px;
-          left: 14px;
-          right: 14px;
-          height: 6px;
+          bottom: 42px;
+          left: 12px;
+          right: 12px;
+          height: 5px;
           background: linear-gradient(180deg,
-            rgba(110, 90, 70, 0.9) 0%,
-            rgba(90, 75, 60, 0.85) 100%);
-          border-radius: 2px 2px 0 0;
+            rgba(110, 88, 65, 0.95) 0%,
+            rgba(90, 70, 50, 0.9) 100%);
+          border-radius: 1px 1px 0 0;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
 
         .easel-canvas {
           position: absolute;
-          bottom: 54px;
+          bottom: 48px;
           left: 50%;
           transform: translateX(-50%);
-          width: 70px;
-          height: 85px;
+          width: 65px;
+          height: 80px;
           background: linear-gradient(180deg,
-            rgba(255, 252, 248, 0.92) 0%,
-            rgba(250, 248, 242, 0.88) 100%);
-          border: 3px solid rgba(180, 160, 130, 0.7);
-          border-radius: 2px;
-          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+            rgba(252, 250, 245, 0.96) 0%,
+            rgba(248, 245, 238, 0.94) 50%,
+            rgba(245, 242, 235, 0.92) 100%);
+          border: none;
+          box-shadow: 
+            0 3px 12px rgba(0, 0, 0, 0.15),
+            inset 0 0 20px rgba(0, 0, 0, 0.02);
+          position: relative;
+        }
+
+        .canvas-edge {
+          position: absolute;
+          top: 0;
+          left: -3px;
+          width: 3px;
+          height: 100%;
+          background: linear-gradient(180deg,
+            rgba(235, 230, 220, 0.95) 0%,
+            rgba(220, 215, 205, 0.9) 100%);
         }
 
         .canvas-content {
           position: absolute;
-          top: 15%;
-          left: 15%;
-          right: 15%;
-          bottom: 15%;
-          background: linear-gradient(135deg,
-            rgba(139, 92, 246, 0.12) 0%,
-            rgba(236, 72, 153, 0.08) 50%,
-            rgba(99, 102, 241, 0.12) 100%);
-          border-radius: 3px;
+          top: 12%;
+          left: 12%;
+          right: 12%;
+          bottom: 12%;
+          background: 
+            radial-gradient(ellipse at 40% 30%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+            radial-gradient(ellipse at 60% 70%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
+          border-radius: 2px;
           animation: canvasShimmer 5s ease-in-out infinite;
         }
 
@@ -347,72 +935,99 @@ export default function StudioRoom({ onBack, onLaunchVDS, onOpenProject, onSelec
           50% { opacity: 0.9; }
         }
 
-        /* ============ BRUSHES ============ */
+        /* ============ BRUSHES - REFINED ============ */
         .brushes-container {
           position: absolute;
-          bottom: 52px;
-          left: 18px;
+          bottom: 47px;
+          left: 15px;
           display: flex;
-          gap: 3px;
+          gap: 2px;
         }
 
         .brush {
-          width: 3px;
-          border-radius: 1px 1px 3px 3px;
+          width: 2px;
+          border-radius: 1px 1px 2px 2px;
+        }
+
+        .brush-handle {
+          background: linear-gradient(180deg,
+            rgba(160, 130, 100, 0.95) 0%,
+            rgba(140, 110, 80, 0.9) 100%);
         }
 
         .brush-1 {
-          height: 20px;
-          background: linear-gradient(180deg, #8B5CF6 0%, #1e1a30 55%);
-          transform: rotate(-5deg);
+          height: 18px;
+          background: linear-gradient(180deg, 
+            rgba(139, 92, 246, 0.9) 0%, 
+            rgba(139, 92, 246, 0.9) 25%,
+            rgba(160, 130, 100, 0.95) 25%,
+            rgba(140, 110, 80, 0.9) 100%);
+          transform: rotate(-4deg);
         }
 
         .brush-2 {
-          height: 22px;
-          background: linear-gradient(180deg, #EC4899 0%, #1e1a30 55%);
-          transform: rotate(3deg);
+          height: 20px;
+          background: linear-gradient(180deg, 
+            rgba(236, 72, 153, 0.9) 0%, 
+            rgba(236, 72, 153, 0.9) 25%,
+            rgba(160, 130, 100, 0.95) 25%,
+            rgba(140, 110, 80, 0.9) 100%);
+          transform: rotate(2deg);
         }
 
         .brush-3 {
-          height: 18px;
-          background: linear-gradient(180deg, #6366F1 0%, #1e1a30 55%);
+          height: 16px;
+          background: linear-gradient(180deg, 
+            rgba(99, 102, 241, 0.9) 0%, 
+            rgba(99, 102, 241, 0.9) 25%,
+            rgba(160, 130, 100, 0.95) 25%,
+            rgba(140, 110, 80, 0.9) 100%);
           transform: rotate(-2deg);
         }
 
-        /* ============ PALETTE ============ */
+        /* ============ PALETTE - REFINED ============ */
         .palette {
           position: absolute;
-          bottom: 10%;
-          left: 20%;
-          width: 55px;
-          height: 40px;
+          bottom: 9%;
+          left: 28%;
+          width: 50px;
+          height: 35px;
           background: linear-gradient(135deg,
-            rgba(200, 180, 150, 0.85) 0%,
-            rgba(180, 160, 130, 0.8) 100%);
-          border-radius: 28px 28px 20px 28px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-          transform: rotate(-15deg);
+            rgba(195, 175, 145, 0.95) 0%,
+            rgba(180, 160, 130, 0.98) 30%,
+            rgba(165, 145, 115, 0.95) 70%,
+            rgba(175, 155, 125, 0.92) 100%);
+          border-radius: 25px 25px 18px 25px;
+          box-shadow: 
+            0 3px 10px rgba(0, 0, 0, 0.2),
+            inset 0 1px 2px rgba(255, 255, 255, 0.2),
+            inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+          transform: rotate(-12deg);
         }
 
         .palette-hole {
           position: absolute;
-          top: 35%;
-          left: 15%;
-          width: 10px;
-          height: 10px;
-          background: rgba(30, 26, 48, 0.7);
+          top: 32%;
+          left: 14%;
+          width: 9px;
+          height: 9px;
+          background: rgba(30, 26, 48, 0.85);
           border-radius: 50%;
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
         }
 
         .paint-blob {
           position: absolute;
           border-radius: 50%;
+          box-shadow: 
+            inset 0 1px 2px rgba(255, 255, 255, 0.3),
+            0 1px 2px rgba(0, 0, 0, 0.15);
         }
 
-        .blob-purple { top: 8px; right: 10px; width: 11px; height: 9px; background: rgba(139, 92, 246, 0.8); }
-        .blob-pink { top: 20px; right: 6px; width: 9px; height: 8px; background: rgba(236, 72, 153, 0.8); }
-        .blob-blue { bottom: 10px; right: 15px; width: 8px; height: 8px; background: rgba(99, 102, 241, 0.8); }
-        .blob-teal { bottom: 6px; left: 35%; width: 9px; height: 7px; background: rgba(20, 184, 166, 0.8); }
+        .blob-purple { top: 6px; right: 9px; width: 10px; height: 8px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.95) 0%, rgba(120, 75, 220, 0.9) 100%); }
+        .blob-pink { top: 16px; right: 5px; width: 8px; height: 7px; background: linear-gradient(135deg, rgba(236, 72, 153, 0.95) 0%, rgba(210, 55, 135, 0.9) 100%); }
+        .blob-blue { bottom: 8px; right: 12px; width: 7px; height: 7px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(80, 85, 220, 0.9) 100%); }
+        .blob-teal { bottom: 5px; left: 32%; width: 8px; height: 6px; background: linear-gradient(135deg, rgba(20, 184, 166, 0.95) 0%, rgba(15, 160, 145, 0.9) 100%); }
 
         /* ============ DESK - ARCHITECTURAL PERSPECTIVE ============ */
         .desk-container {
@@ -827,41 +1442,241 @@ export default function StudioRoom({ onBack, onLaunchVDS, onOpenProject, onSelec
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
         }
 
-        /* ============ PLANT ============ */
+        /* ============ PLANT - ELEGANT MONSTERA ============ */
         .floor-plant {
           position: absolute;
-          bottom: 10%;
-          right: 28%;
+          bottom: 6%;
+          right: 24%;
         }
 
+        /* Ceramic pot with saucer */
         .plant-pot {
-          width: 32px;
-          height: 28px;
-          background: linear-gradient(180deg,
-            rgba(100, 80, 120, 0.85) 0%,
-            rgba(80, 65, 100, 0.9) 100%);
-          border-radius: 3px 3px 8px 8px;
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+          width: 55px;
+          height: 50px;
+          background: linear-gradient(90deg,
+            rgba(55, 50, 45, 0.95) 0%,
+            rgba(75, 68, 62, 0.98) 20%,
+            rgba(85, 78, 70, 0.98) 40%,
+            rgba(75, 68, 62, 0.97) 60%,
+            rgba(60, 55, 48, 0.95) 80%,
+            rgba(50, 45, 40, 0.93) 100%);
+          border-radius: 8% 8% 25% 25%;
+          box-shadow: 
+            5px 0 15px rgba(0, 0, 0, 0.25),
+            -3px 0 10px rgba(0, 0, 0, 0.15),
+            0 8px 20px rgba(0, 0, 0, 0.3),
+            inset 0 3px 8px rgba(255, 255, 255, 0.08);
+          position: relative;
         }
 
+        .pot-rim {
+          position: absolute;
+          top: -5px;
+          left: -3px;
+          right: -3px;
+          height: 8px;
+          background: linear-gradient(90deg,
+            rgba(60, 55, 48, 0.95) 0%,
+            rgba(80, 72, 65, 0.98) 30%,
+            rgba(90, 82, 74, 0.98) 50%,
+            rgba(75, 68, 60, 0.97) 70%,
+            rgba(55, 50, 45, 0.95) 100%);
+          border-radius: 4px 4px 0 0;
+          box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .pot-saucer {
+          position: absolute;
+          bottom: -6px;
+          left: -8px;
+          right: -8px;
+          height: 6px;
+          background: linear-gradient(90deg,
+            rgba(50, 45, 40, 0.9) 0%,
+            rgba(70, 62, 55, 0.95) 30%,
+            rgba(65, 58, 52, 0.95) 70%,
+            rgba(48, 43, 38, 0.9) 100%);
+          border-radius: 50%;
+          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        .pot-soil {
+          position: absolute;
+          top: 3px;
+          left: 6px;
+          right: 6px;
+          height: 10px;
+          background: radial-gradient(ellipse at 50% 100%,
+            rgba(45, 35, 28, 0.95) 0%,
+            rgba(55, 42, 32, 0.9) 50%,
+            rgba(40, 30, 22, 0.85) 100%);
+          border-radius: 3px;
+        }
+
+        /* Monstera leaves container */
         .plant-leaves {
           position: absolute;
-          bottom: 24px;
+          bottom: 45px;
           left: 50%;
           transform: translateX(-50%);
+          width: 90px;
+          height: 100px;
         }
 
-        .plant-leaf {
+        /* Large monstera leaves */
+        .monstera-leaf {
           position: absolute;
-          background: linear-gradient(180deg,
-            rgba(100, 180, 130, 0.85) 0%,
-            rgba(70, 150, 100, 0.9) 100%);
-          border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+          border-radius: 50% 50% 45% 45%;
+          box-shadow: 
+            inset 3px 0 8px rgba(255, 255, 255, 0.08),
+            inset -2px 0 6px rgba(0, 0, 0, 0.1),
+            2px 3px 8px rgba(0, 0, 0, 0.15);
         }
 
-        .leaf-1 { width: 11px; height: 32px; left: -8px; bottom: 0; transform: rotate(-15deg); }
-        .leaf-2 { width: 13px; height: 40px; left: -2px; bottom: 0; transform: rotate(5deg); }
-        .leaf-3 { width: 10px; height: 28px; left: 5px; bottom: 3px; transform: rotate(20deg); }
+        /* Main large leaf */
+        .leaf-1 {
+          width: 35px;
+          height: 50px;
+          left: 25px;
+          bottom: 20px;
+          background: linear-gradient(135deg,
+            rgba(45, 95, 55, 0.95) 0%,
+            rgba(55, 110, 65, 0.98) 30%,
+            rgba(50, 100, 58, 0.96) 60%,
+            rgba(40, 85, 48, 0.94) 100%);
+          transform: rotate(-5deg);
+        }
+
+        /* Leaf hole cutouts (monstera style) */
+        .leaf-1::before {
+          content: '';
+          position: absolute;
+          top: 35%;
+          left: 20%;
+          width: 8px;
+          height: 12px;
+          background: rgba(30, 26, 48, 0.3);
+          border-radius: 50%;
+        }
+
+        .leaf-1::after {
+          content: '';
+          position: absolute;
+          top: 25%;
+          right: 18%;
+          width: 6px;
+          height: 10px;
+          background: rgba(30, 26, 48, 0.3);
+          border-radius: 50%;
+        }
+
+        /* Second large leaf */
+        .leaf-2 {
+          width: 32px;
+          height: 45px;
+          left: 10px;
+          bottom: 30px;
+          background: linear-gradient(145deg,
+            rgba(50, 105, 60, 0.96) 0%,
+            rgba(60, 120, 70, 0.98) 40%,
+            rgba(48, 98, 55, 0.95) 100%);
+          transform: rotate(-25deg);
+        }
+
+        .leaf-2::before {
+          content: '';
+          position: absolute;
+          top: 40%;
+          left: 25%;
+          width: 7px;
+          height: 10px;
+          background: rgba(30, 26, 48, 0.3);
+          border-radius: 50%;
+        }
+
+        /* Third leaf */
+        .leaf-3 {
+          width: 28px;
+          height: 40px;
+          right: 8px;
+          bottom: 35px;
+          background: linear-gradient(125deg,
+            rgba(42, 88, 50, 0.95) 0%,
+            rgba(52, 105, 60, 0.97) 50%,
+            rgba(45, 92, 52, 0.94) 100%);
+          transform: rotate(20deg);
+        }
+
+        .leaf-3::after {
+          content: '';
+          position: absolute;
+          top: 30%;
+          left: 30%;
+          width: 5px;
+          height: 8px;
+          background: rgba(30, 26, 48, 0.3);
+          border-radius: 50%;
+        }
+
+        /* Smaller accent leaves */
+        .leaf-4 {
+          width: 22px;
+          height: 32px;
+          left: 0;
+          bottom: 45px;
+          background: linear-gradient(160deg,
+            rgba(55, 115, 65, 0.96) 0%,
+            rgba(48, 100, 55, 0.94) 100%);
+          transform: rotate(-40deg);
+        }
+
+        .leaf-5 {
+          width: 20px;
+          height: 28px;
+          right: 0;
+          bottom: 50px;
+          background: linear-gradient(120deg,
+            rgba(40, 85, 48, 0.94) 0%,
+            rgba(50, 100, 58, 0.96) 100%);
+          transform: rotate(35deg);
+        }
+
+        /* Young unfurling leaf */
+        .leaf-6 {
+          width: 12px;
+          height: 25px;
+          left: 38px;
+          bottom: 60px;
+          background: linear-gradient(180deg,
+            rgba(65, 130, 75, 0.97) 0%,
+            rgba(55, 115, 65, 0.95) 100%);
+          border-radius: 40% 40% 45% 45%;
+          transform: rotate(5deg);
+        }
+
+        /* Stems */
+        .plant-stems {
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 20px;
+          height: 50px;
+        }
+
+        .stem {
+          position: absolute;
+          bottom: 0;
+          width: 3px;
+          background: linear-gradient(180deg,
+            rgba(45, 80, 50, 0.95) 0%,
+            rgba(55, 95, 60, 0.9) 100%);
+          border-radius: 2px;
+        }
+
+        .stem-1 { left: 8px; height: 45px; transform: rotate(-3deg); }
+        .stem-2 { left: 4px; height: 50px; transform: rotate(-8deg); }
+        .stem-3 { left: 12px; height: 48px; transform: rotate(5deg); }
 
         /* ============ BACK BUTTON ============ */
         .back-button {
@@ -1163,28 +1978,26 @@ export default function StudioRoom({ onBack, onLaunchVDS, onOpenProject, onSelec
 
         /* ============ RESPONSIVE ============ */
         @media (max-width: 768px) {
-          .room-elements { opacity: ${isLoaded ? 0.3 : 0}; }
-          .category-grid { max-width: 360px; gap: 10px; }
-          .template-list { max-width: 340px; }
-          .easel-container { left: 3%; transform: scale(0.7); }
-          .palette { left: 10%; transform: scale(0.7) rotate(-15deg); }
-          .desk-container { right: 2%; transform: perspective(800px) rotateY(-8deg) scale(0.65); transform-origin: bottom right; }
-          .floor-plant { right: 42%; transform: scale(0.75); }
-          .window-container { width: 14%; right: 5%; }
+          .room-elements { opacity: ${isLoaded ? 0.25 : 0}; }
+          .wall-art { left: 3%; top: 3%; transform: scale(0.45); }
+          .sculpture { left: 1%; transform: scale(0.4); }
+          .easel-container { left: 5%; transform: scale(0.4); }
+          .palette { left: 12%; transform: scale(0.4) rotate(-12deg); }
+          .floor-plant { right: 28%; transform: scale(0.4); }
+          .desk-container { right: 1%; transform: perspective(800px) rotateY(-8deg) scale(0.35); transform-origin: bottom right; }
         }
 
         @media (max-width: 480px) {
-          .room-elements { opacity: ${isLoaded ? 0.2 : 0}; }
-          .content { padding: calc(env(safe-area-inset-top, 0px) + 60px) 16px 30px; }
-          .title { font-size: 1.6rem; }
-          .launch-vds { padding: 14px 32px; font-size: 0.9rem; }
-          .category-grid { grid-template-columns: 1fr; max-width: 280px; }
-          .template-list { grid-template-columns: 1fr; max-width: 280px; }
-          .projects-grid { grid-template-columns: 1fr; max-width: 280px; }
-          .easel-container, .palette { display: none; }
-          .desk-container { right: 1%; transform: perspective(800px) rotateY(-8deg) scale(0.45); transform-origin: bottom right; }
-          .floor-plant { right: 55%; transform: scale(0.6); }
-          .window-container { width: 16%; right: 4%; top: 5%; height: 26%; }
+          .room-elements { opacity: ${isLoaded ? 0.12 : 0}; }
+          .wall-art, .sculpture, .easel-container, .palette { display: none; }
+          .desk-container { right: 0%; transform: perspective(800px) rotateY(-8deg) scale(0.25); transform-origin: bottom right; }
+          .floor-plant { right: 45%; bottom: 3%; transform: scale(0.28); }
+          .title { font-size: 1.5rem; }
+          .launch-vds { padding: 12px 26px; font-size: 0.82rem; }
+          .category-grid { grid-template-columns: 1fr; gap: 8px; }
+          .template-list { grid-template-columns: 1fr; }
+          .projects-grid { grid-template-columns: 1fr; }
+          .category-card { padding: 14px 12px; }
         }
       `}</style>
 
@@ -1213,16 +2026,80 @@ export default function StudioRoom({ onBack, onLaunchVDS, onOpenProject, onSelec
 
           <div className="floor"><div className="floor-grid" /></div>
 
-          {/* Window */}
+          {/* Wall Art - Mona Lisa */}
+          <div className="wall-art">
+            <div className="frame-outer">
+              <div className="frame-inner">
+                <div className="painting-canvas">
+                  <div className="painting-figure">
+                    <div className="figure-hair" />
+                    <div className="figure-head" />
+                    <div className="figure-body" />
+                    <div className="figure-hands" />
+                  </div>
+                  <div className="painting-varnish" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Sculpture - Classical Venus/Torso */}
+          <div className="sculpture">
+            <div className="torso">
+              <div className="sculpture-hair">
+                <div className="hair-bun" />
+              </div>
+              <div className="sculpture-head" />
+              <div className="sculpture-neck" />
+              <div className="sculpture-shoulders">
+                <div className="arm-stump arm-left" />
+                <div className="arm-stump arm-right" />
+                <div className="sculpture-drape">
+                  <div className="drape-fold fold-1" />
+                  <div className="drape-fold fold-2" />
+                  <div className="drape-fold fold-3" />
+                </div>
+              </div>
+            </div>
+            <div className="pedestal">
+              <div className="pedestal-crown" />
+              <div className="pedestal-base" />
+            </div>
+          </div>
+
+          {/* Window with Day/Night View */}
           <div className="window-container">
             <div className="window">
-              <div className="window-star" style={{ top: '15%', left: '20%', width: '2px', height: '2px' }} />
-              <div className="window-star" style={{ top: '30%', right: '25%', width: '1.5px', height: '1.5px', animationDelay: '1s' }} />
-              <div className="window-star" style={{ top: '55%', left: '35%', width: '2px', height: '2px', animationDelay: '2s' }} />
-              <div className="window-star" style={{ bottom: '25%', right: '35%', width: '1.5px', height: '1.5px', animationDelay: '0.5s' }} />
+              {/* Day elements */}
+              <div className="day-sky" />
+              <div className="sun" />
+              <div className="cloud cloud-1" />
+              <div className="cloud cloud-2" />
+              
+              {/* Night elements */}
+              <div className="night-sky" />
+              <div className="moon-glow" />
+              <div className="moon" />
+              <div className="shooting-star" />
+              {/* Stars */}
+              <div className="star" style={{ top: '12%', left: '18%', width: '2px', height: '2px' }} />
+              <div className="star" style={{ top: '25%', left: '65%', width: '1.5px', height: '1.5px', animationDelay: '0.5s' }} />
+              <div className="star" style={{ top: '18%', left: '40%', width: '1px', height: '1px', animationDelay: '1s' }} />
+              <div className="star" style={{ top: '35%', left: '25%', width: '1.5px', height: '1.5px', animationDelay: '1.5s' }} />
+              <div className="star" style={{ top: '8%', left: '75%', width: '2px', height: '2px', animationDelay: '2s' }} />
+              <div className="star" style={{ top: '42%', left: '55%', width: '1px', height: '1px', animationDelay: '0.8s' }} />
+              
+              {/* Hills */}
+              <div className="window-hills">
+                <div className="window-hill window-hill-1" />
+                <div className="window-hill window-hill-2" />
+              </div>
+              
+              {/* Frame */}
               <div className="window-frame-v" />
               <div className="window-frame-h" />
             </div>
+            <div className="window-sill" />
           </div>
 
           {/* Easel */}
@@ -1239,6 +2116,7 @@ export default function StudioRoom({ onBack, onLaunchVDS, onOpenProject, onSelec
               </div>
             </div>
             <div className="easel-canvas">
+              <div className="canvas-edge" />
               <div className="canvas-content" />
             </div>
           </div>
@@ -1252,14 +2130,26 @@ export default function StudioRoom({ onBack, onLaunchVDS, onOpenProject, onSelec
             <div className="paint-blob blob-teal" />
           </div>
 
-          {/* Plant */}
+          {/* Plant - Elegant Monstera */}
           <div className="floor-plant">
             <div className="plant-leaves">
-              <div className="plant-leaf leaf-1" />
-              <div className="plant-leaf leaf-2" />
-              <div className="plant-leaf leaf-3" />
+              <div className="plant-stems">
+                <div className="stem stem-1" />
+                <div className="stem stem-2" />
+                <div className="stem stem-3" />
+              </div>
+              <div className="monstera-leaf leaf-1" />
+              <div className="monstera-leaf leaf-2" />
+              <div className="monstera-leaf leaf-3" />
+              <div className="monstera-leaf leaf-4" />
+              <div className="monstera-leaf leaf-5" />
+              <div className="monstera-leaf leaf-6" />
             </div>
-            <div className="plant-pot" />
+            <div className="plant-pot">
+              <div className="pot-rim" />
+              <div className="pot-soil" />
+              <div className="pot-saucer" />
+            </div>
           </div>
 
           {/* Desk - Architectural */}

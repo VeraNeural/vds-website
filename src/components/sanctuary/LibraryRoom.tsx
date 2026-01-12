@@ -42,6 +42,19 @@ type Story = {
 
 const STORIES: Story[] = [
   { 
+    id: 'rest-edge-of-sleep', 
+    title: 'Rest — A Story for the Edge of Sleep', 
+    description: 'A gentle descent into rest. Five chapters that ease you from day to night, from thoughts to stillness, from waking to sleep. Let each chapter carry you deeper.',
+    category: 'rest-sleep',
+    chapters: [
+      { id: 'ch1', title: 'Chapter 1: The House After Dusk', duration: '1:44', audioUrl: '/audio/Rest.wav' },
+      { id: 'ch2', title: 'Chapter 2: The Weight of the Evening Air', duration: '2:05', audioUrl: '/audio/Rest2.wav' },
+      { id: 'ch3', title: 'Chapter 3: The Bed That Waited', duration: '1:48', audioUrl: '/audio/Rest3.wav' },
+      { id: 'ch4', title: 'Chapter 4: When Thought Loses Its Edges', duration: '1:51', audioUrl: '/audio/Rest4.wav' },
+      { id: 'ch5', title: 'Chapter 5: The Moment Before Sleep', duration: '1:42', audioUrl: '/audio/Rest5.wav' },
+    ]
+  },
+  { 
     id: 'calm-forest', 
     title: 'The Calm Forest', 
     description: 'A gentle walk through peaceful woods, where sunlight filters through ancient trees and every step brings you deeper into stillness. Journey through five chapters of deepening peace.',
@@ -52,6 +65,32 @@ const STORIES: Story[] = [
       { id: 'ch3', title: 'Chapter 3: The Space Between Sounds', duration: '1:46', audioUrl: '/audio/calm-forest3.wav' },
       { id: 'ch4', title: 'Chapter 4: Without Waiting', duration: '1:47', audioUrl: '/audio/calm-forest4.wav' },
       { id: 'ch5', title: 'Chapter 5: Enough to Carry', duration: '1:44', audioUrl: '/audio/calm-forest5.wav' },
+    ]
+  },
+  { 
+    id: 'office-after-everyone-left', 
+    title: 'The Office After Everyone Left', 
+    description: 'Discover the quiet power of spaces after the day ends. Five chapters exploring the stillness, freedom, and wisdom waiting in moments when the world steps away.',
+    category: 'rise-ready',
+    chapters: [
+      { id: 'ch1', title: 'Chapter 1: When the Noise Withdraws', duration: '1:28', audioUrl: '/audio/Office.wav' },
+      { id: 'ch2', title: 'Chapter 2: The Space That Expands', duration: '1:34', audioUrl: '/audio/Office2.wav' },
+      { id: 'ch3', title: 'Chapter 3: Without an Audience', duration: '1:48', audioUrl: '/audio/Office3.wav' },
+      { id: 'ch4', title: 'Chapter 4: What the Body Learned Here', duration: '1:42', audioUrl: '/audio/office4.wav' },
+      { id: 'ch5', title: 'Chapter 5: After the Lights Go Out', duration: '1:45', audioUrl: '/audio/office5.wav' },
+    ]
+  },
+  { 
+    id: 'guided-journeys-trains', 
+    title: 'Journey Through Time', 
+    description: 'A series of imaginative journeys that transport your mind to places both familiar and fantastical. Five chapters of guided travel and discovery.',
+    category: 'guided-journeys',
+    chapters: [
+      { id: 'ch1', title: 'Journey 1 — The Train That Didn\'t Rush', duration: '1:51', audioUrl: '/audio/Train.wav' },
+      { id: 'ch2', title: 'Journey 2 — The Desert at First Light', duration: '1:45', audioUrl: '/audio/Train2.wav' },
+      { id: 'ch3', title: 'Journey 3 — The City Seen From Above', duration: '1:28', audioUrl: '/audio/Train3.wav' },
+      { id: 'ch4', title: 'Journey 4 — The Lake Without Wind', duration: '1:19', audioUrl: '/audio/Train4.wav' },
+      { id: 'ch5', title: 'Journey 5 — The Road After Midnight', duration: '1:32', audioUrl: '/audio/Train5.wav' },
     ]
   },
 ];
@@ -112,6 +151,7 @@ export default function LibraryRoom({ onBack, onStartStory, onStartLesson, onSta
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   
   // Audio player state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -192,23 +232,35 @@ export default function LibraryRoom({ onBack, onStartStory, onStartLesson, onSta
 
   const handleCategoryClick = (categoryId: string, type: 'story' | 'lesson') => {
     if (type === 'story') {
-      setSelectedCategory(categoryId);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setSelectedCategory(categoryId);
+        setIsTransitioning(false);
+      }, 300);
     } else if (type === 'lesson' && onStartLesson) {
       onStartLesson(categoryId);
     }
   };
 
   const handleStoryClick = (story: Story) => {
-    setSelectedStory(story);
-    setCurrentChapterIndex(0);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setSelectedStory(story);
+      setCurrentChapterIndex(0);
+      setIsTransitioning(false);
+    }, 300);
   };
 
   const handleBackToCategories = () => {
-    setSelectedCategory(null);
-    setSelectedStory(null);
-    setCurrentChapterIndex(0);
-    setIsPlaying(false);
-    if (audioRef.current) audioRef.current.pause();
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setSelectedCategory(null);
+      setSelectedStory(null);
+      setCurrentChapterIndex(0);
+      setIsPlaying(false);
+      if (audioRef.current) audioRef.current.pause();
+      setIsTransitioning(false);
+    }, 300);
   };
 
   const handleChapterSelect = (index: number) => {
@@ -725,6 +777,28 @@ export default function LibraryRoom({ onBack, onStartStory, onStartLesson, onSta
           transition: opacity 0.8s ease, transform 0.8s ease;
         }
 
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeOutDown {
+          from {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+        }
+
         .header {
           text-align: center;
           margin-bottom: 28px;
@@ -780,6 +854,7 @@ export default function LibraryRoom({ onBack, onStartStory, onStartLesson, onSta
           gap: 10px;
           max-width: 380px;
           width: 100%;
+          animation: ${isTransitioning ? 'fadeOutDown' : 'fadeInUp'} 0.4s ease-in-out;
         }
 
         .category-card {
@@ -826,6 +901,7 @@ export default function LibraryRoom({ onBack, onStartStory, onStartLesson, onSta
           gap: 10px;
           max-width: 380px;
           width: 100%;
+          animation: ${isTransitioning ? 'fadeOutDown' : 'fadeInUp'} 0.4s ease-in-out;
         }
 
         .assessment-card {
@@ -883,6 +959,7 @@ export default function LibraryRoom({ onBack, onStartStory, onStartLesson, onSta
           gap: 10px;
           max-width: 380px;
           width: 100%;
+          animation: ${isTransitioning ? 'fadeOutDown' : 'fadeInUp'} 0.4s ease-in-out;
         }
 
         .story-card {
@@ -966,6 +1043,7 @@ export default function LibraryRoom({ onBack, onStartStory, onStartLesson, onSta
           max-width: 400px;
           width: 100%;
           text-align: center;
+          animation: ${isTransitioning ? 'fadeOutDown' : 'fadeInUp'} 0.4s ease-in-out;
         }
 
         .story-detail-title {
@@ -1242,28 +1320,6 @@ export default function LibraryRoom({ onBack, onStartStory, onStartLesson, onSta
           height: 24px;
           background: rgba(255, 180, 100, 0.8);
           border-radius: 2px;
-        }
-
-        .vera-presence {
-          position: fixed;
-          bottom: 24px;
-          right: 24px;
-          z-index: 50;
-        }
-
-        .vera-orb {
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          background: radial-gradient(circle at 30% 30%, rgba(200, 180, 240, 0.9) 0%, rgba(150, 130, 200, 0.75) 50%, rgba(120, 100, 180, 0.6) 100%);
-          box-shadow: 0 0 30px rgba(139, 119, 183, 0.4);
-          animation: orbBreathe 5s ease-in-out infinite;
-          cursor: pointer;
-        }
-
-        @keyframes orbBreathe {
-          0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(139, 119, 183, 0.4); }
-          50% { transform: scale(1.05); box-shadow: 0 0 45px rgba(139, 119, 183, 0.5); }
         }
 
         @media (max-width: 768px) {
@@ -1597,10 +1653,6 @@ export default function LibraryRoom({ onBack, onStartStory, onStartLesson, onSta
               ))}
             </div>
           )}
-        </div>
-
-        <div className="vera-presence">
-          <div className="vera-orb" />
         </div>
       </div>
     </>
