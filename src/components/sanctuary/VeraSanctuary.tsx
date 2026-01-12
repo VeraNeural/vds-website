@@ -650,7 +650,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           position: absolute; 
           bottom: 28%; 
           left: 12%; 
-          z-index: 25;
+          z-index: 5;
         }
 
         .floor-lamp {
@@ -1066,7 +1066,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           .portal-essence { font-size: 0.45rem; }
           .sofa-group { transform: translateX(-50%) scale(0.85); opacity: 0.9; }
           .coffee-table { opacity: 0.85; transform: translateX(-50%) scale(0.9); }
-          .floor-lamp-group { left: 8%; opacity: 0.75; transform: scale(0.85); }
+          .floor-lamp-group { left: 8%; opacity: 0.75; transform: scale(0.85); display: none; }
           .plant-group { right: 12%; opacity: 0.8; transform: scale(0.85); left: auto; }
           .rug { bottom: 22%; }
           .ceiling-light { opacity: 0.7; }
@@ -1089,7 +1089,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           .portal-essence { display: none; }
           .sofa-group { bottom: 22%; left: 50%; transform: translateX(-50%) scale(0.75); opacity: 0.7; }
           .coffee-table { left: 50%; transform: translateX(-50%) scale(0.7); opacity: 0.65; }
-          .floor-lamp-group { left: 8%; opacity: 0.6; transform: scale(0.65); }
+          .floor-lamp-group { left: 8%; opacity: 0.6; transform: scale(0.65); display: none; }
           .plant-group { right: 8%; left: auto; opacity: 0.65; transform: scale(0.7); bottom: 24%; }
           .rug { bottom: 22%; }
           .ceiling-light { opacity: 0.3; }
