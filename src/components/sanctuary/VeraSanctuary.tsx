@@ -876,7 +876,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
 
         .greeting-area {
           position: absolute;
-          top: 18%;
+          top: 25%;
           left: 0;
           right: 0;
           text-align: center;
@@ -890,16 +890,16 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           font-family: 'Cormorant Garamond', Georgia, serif;
           font-size: clamp(1.6rem, 5vw, 2.8rem);
           font-weight: 300;
-          color: ${isDark ? '#ffffff' : '#2a2a2a'};
+          color: ${isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(42, 42, 42, 0.6)'};
           margin: 0;
-          text-shadow: 0 4px 20px ${isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
+          text-shadow: 0 4px 20px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
         }
 
         .time-essence {
           font-size: clamp(0.6rem, 2vw, 0.8rem);
           letter-spacing: 0.25em;
           text-transform: uppercase;
-          color: ${isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.35)'};
+          color: ${isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.25)'};
           margin-top: 10px;
           font-weight: 300;
         }
@@ -1047,9 +1047,9 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
         /* ============ RESPONSIVE ============ */
 
         @media (max-width: 768px) {
-          .greeting-area { top: 28%; left: 50%; transform: translateX(-50%); }
-          .greeting { font-size: clamp(1.4rem, 4.5vw, 1.8rem); }
-          .time-essence { font-size: 0.6rem; letter-spacing: 0.2em; }
+          .greeting-area { top: 26%; }
+          .greeting { font-size: clamp(1.4rem, 4.5vw, 1.8rem); color: ${isDark ? 'rgba(255, 255, 255, 0.65)' : 'rgba(42, 42, 42, 0.55)'}; }
+          .time-essence { font-size: 0.6rem; letter-spacing: 0.2em; color: ${isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.2)'}; }
           .vera-presence { top: 55%; left: 50%; transform: translateX(-50%); opacity: 0 !important; pointer-events: none; }
           .orb { width: 80px; height: 80px; }
           .orb-ring { inset: -12px; }
@@ -1060,15 +1060,18 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           .portal-icon { width: 22px; height: 22px; }
           .portal-name { font-size: 0.6rem; }
           .portal-essence { font-size: 0.45rem; }
-          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group { opacity: 0.8; transform: scale(0.9) translateX(-15%); }
+          .sofa-group { left: 50%; transform: translateX(-25%); opacity: 0.8; }
+          .coffee-table { right: 8%; left: auto; opacity: 0.8; transform: scale(0.95); }
+          .floor-lamp-group { right: 5%; left: auto; opacity: 0.75; transform: scale(0.9); }
+          .plant-group { right: 3%; left: auto; opacity: 0.8; transform: scale(0.9); }
           .ceiling-light { opacity: 0.7; }
         }
 
         @media (max-width: 480px) {
-          .greeting-area { top: 22%; padding: 0 15%; left: 50%; transform: translateX(-50%); }
-          .greeting { font-size: clamp(1.2rem, 4.5vw, 1.5rem); }
-          .time-essence { font-size: 0.5rem; margin-top: 6px; letter-spacing: 0.15em; }
-          .vera-presence { top: 32%; left: 50%; transform: translateX(-50%); opacity: 0 !important; pointer-events: none; gap: 14px; }
+          .greeting-area { top: 24%; padding: 0 15%; left: 0; transform: none; }
+          .greeting { font-size: clamp(1.2rem, 4.5vw, 1.5rem); color: ${isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(42, 42, 42, 0.5)'}; }
+          .time-essence { font-size: 0.5rem; margin-top: 6px; letter-spacing: 0.15em; color: ${isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.15)'}; }
+          .vera-presence { top: 32%; left: auto; right: 24px; transform: none; opacity: 0 !important; pointer-events: none; gap: 14px; }
           .orb { width: 60px; height: 60px; }
           .orb-ring { inset: -8px; }
           .orb-ring-outer { inset: -16px; }
@@ -1079,7 +1082,10 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           .portal-icon { width: 18px; height: 18px; }
           .portal-name { font-size: 0.55rem; }
           .portal-essence { display: none; }
-          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group { opacity: 0.6; transform: scale(0.8) translateX(-20%); }
+          .sofa-group { bottom: 22%; right: 12px; left: auto; opacity: 0.75; transform: scale(0.85); }
+          .coffee-table { right: 8px; left: auto; opacity: 0.7; transform: scale(0.8); }
+          .floor-lamp-group { right: 4px; left: auto; opacity: 0.7; transform: scale(0.75); }
+          .plant-group { right: 2px; left: auto; opacity: 0.75; transform: scale(0.8); }
           .ceiling-light { opacity: 0.3; }
           .bottom-bar { flex-direction: column; align-items: center; }
           .action-btn { width: 100%; max-width: 280px; padding: 14px 24px; font-size: 0.8rem; }
