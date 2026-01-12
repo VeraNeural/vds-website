@@ -126,14 +126,19 @@ export default function VeraBubble({
     setBubbleMessage(msgs[Math.floor(Math.random() * msgs.length)])
   }, [context])
 
-  // Rotate bubble messages periodically
+  // Rotate bubble messages with fade animation
   useEffect(() => {
     if (isExpanded) return
     
     const interval = setInterval(() => {
+      // Fade out the message (animation handles this)
       const msgs = contextualMessages[context] || contextualMessages.home
-      setBubbleMessage(msgs[Math.floor(Math.random() * msgs.length)])
-    }, 15000) // Every 15 seconds
+      
+      // Schedule message change after fade out (800ms)
+      setTimeout(() => {
+        setBubbleMessage(msgs[Math.floor(Math.random() * msgs.length)])
+      }, 800)
+    }, 8000) // Every 8 seconds
 
     return () => clearInterval(interval)
   }, [context, isExpanded])
@@ -336,12 +341,14 @@ export default function VeraBubble({
           font-size: 0.85rem;
           line-height: 1.5;
           box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-          animation: messageFloat 3s ease-in-out infinite;
+          animation: messageFadeInOut 8s ease-in-out infinite;
         }
 
-        @keyframes messageFloat {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
+        @keyframes messageFadeInOut {
+          0% { opacity: 1; transform: translateY(0); }
+          85% { opacity: 1; transform: translateY(0); }
+          92% { opacity: 0; transform: translateY(-10px); }
+          100% { opacity: 0; transform: translateY(-10px); }
         }
 
         .vera-avatar {

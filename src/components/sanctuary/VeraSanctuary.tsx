@@ -1047,10 +1047,10 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
         /* ============ RESPONSIVE ============ */
 
         @media (max-width: 768px) {
-          .greeting-area { top: 14%; }
+          .greeting-area { top: 28%; }
           .greeting { font-size: clamp(1.4rem, 4.5vw, 1.8rem); }
           .time-essence { font-size: 0.6rem; letter-spacing: 0.2em; }
-          .vera-presence { top: 32%; }
+          .vera-presence { top: 38%; }
           .orb { width: 80px; height: 80px; }
           .orb-ring { inset: -12px; }
           .orb-ring-outer { inset: -25px; }
@@ -1060,14 +1060,14 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           .portal-icon { width: 22px; height: 22px; }
           .portal-name { font-size: 0.6rem; }
           .portal-essence { font-size: 0.45rem; }
-          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group, .ceiling-light { opacity: 0.4; transform: scale(0.85); }
+          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group, .ceiling-light { opacity: 0.7; transform: scale(0.9); }
         }
 
         @media (max-width: 480px) {
-          .greeting-area { top: 12%; padding: 0 15%; }
+          .greeting-area { top: 22%; padding: 0 15%; }
           .greeting { font-size: clamp(1.2rem, 4.5vw, 1.5rem); }
           .time-essence { font-size: 0.5rem; margin-top: 6px; letter-spacing: 0.15em; }
-          .vera-presence { top: 26%; gap: 14px; }
+          .vera-presence { top: 32%; gap: 14px; }
           .orb { width: 60px; height: 60px; }
           .orb-ring { inset: -8px; }
           .orb-ring-outer { inset: -16px; }
@@ -1078,7 +1078,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           .portal-icon { width: 18px; height: 18px; }
           .portal-name { font-size: 0.55rem; }
           .portal-essence { display: none; }
-          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group { display: none; }
+          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group { opacity: 0.6; transform: scale(0.8); }
           .ceiling-light { opacity: 0.3; }
           .bottom-bar { flex-direction: column; align-items: center; }
           .action-btn { width: 100%; max-width: 280px; padding: 14px 24px; font-size: 0.8rem; }

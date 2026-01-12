@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import VeraBubble from '@/components/vds/VeraBubble'
 
 export default function VDSHomePage() {
   const [scrolled, setScrolled] = useState(false)
@@ -1705,11 +1706,12 @@ export default function VDSHomePage() {
           <p className="footer-copy">© {new Date().getFullYear()} Vision Design Studio. All rights reserved.</p>
         </footer>
 
-        {/* VERA Bubble */}
-        <a href="https://veraneural.ai/sanctuary" target="_blank" rel="noopener noreferrer" className="vera-bubble">
-          <img src="/vera-icon.png" alt="VERA" />
-          <span className="vera-bubble-tooltip">Space Psychology</span>
-        </a>
+        {/* VERA Bubble - Interactive Chat */}
+        <VeraBubble 
+          context="home"
+          isPremium={false}
+          onUpgradeClick={() => window.location.href = '/upgrade'}
+        />
       </div>
     </>
   )
