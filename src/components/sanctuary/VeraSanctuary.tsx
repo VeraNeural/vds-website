@@ -11,1620 +11,1250 @@ interface VeraSanctuaryProps {
 type Room = {
   id: string;
   name: string;
-  description: string;
+  essence: string;
 };
 
 const ROOMS: Room[] = [
-  { id: 'therapy', name: 'Therapy Room', description: 'Talk with VERA' },
-  { id: 'zen', name: 'Zen Room', description: 'Breathe & meditate' },
-  { id: 'library', name: 'Library', description: 'Stories & learning' },
-  { id: 'bedroom', name: 'Bedroom', description: 'Sleep & rest' },
-  { id: 'studio', name: 'Design Studio', description: 'Create spaces' },
-  { id: 'journal', name: 'Journal Nook', description: 'Write & reflect' },
+  { id: 'therapy', name: 'Therapy Room', essence: 'Speak freely' },
+  { id: 'zen', name: 'Zen Garden', essence: 'Find stillness' },
+  { id: 'library', name: 'Library', essence: 'Discover wisdom' },
+  { id: 'bedroom', name: 'Rest Chamber', essence: 'Embrace sleep' },
+  { id: 'studio', name: 'Design Studio', essence: 'Create beauty' },
+  { id: 'journal', name: 'Journal Nook', essence: 'Reflect deeply' },
 ];
 
 export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryProps) {
   const router = useRouter();
-
-  const [hoveredRoom, setHoveredRoom] = useState<string | null>(null);
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; size: number; duration: number; delay: number }>>([]);
-  const [dustParticles, setDustParticles] = useState<Array<{ id: number; x: number; size: number; duration: number; delay: number }>>([]);
+  const [activePortal, setActivePortal] = useState<string | null>(null);
+  const [isEntering, setIsEntering] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night'>('morning');
-
-  const handleTalkToVera = () => {
-    router.push('/chat-exact');
-  };
+  const [breathPhase, setBreathPhase] = useState(0);
 
   useEffect(() => {
-    // Floating ambient particles
-    const newParticles = Array.from({ length: 40 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 4 + 2,
-      duration: Math.random() * 15 + 10,
-      delay: Math.random() * 5,
-    }));
-    setParticles(newParticles);
+    setTimeout(() => setIsLoaded(true), 100);
 
-    // Dust in light beams
-    const newDust = Array.from({ length: 40 }, (_, i) => ({
-      id: i,
-      x: 50 + Math.random() * 40,
-      size: Math.random() * 3 + 1,
-      duration: Math.random() * 12 + 8,
-      delay: Math.random() * 8,
-    }));
-    setDustParticles(newDust);
-
-    // Determine time of day
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) setTimeOfDay('morning');
     else if (hour >= 12 && hour < 17) setTimeOfDay('afternoon');
     else if (hour >= 17 && hour < 21) setTimeOfDay('evening');
     else setTimeOfDay('night');
-  }, []);
 
-  const getGreeting = () => {
-    switch (timeOfDay) {
-      case 'morning': return 'Good morning';
-      case 'afternoon': return 'Good afternoon';
-      case 'evening': return 'Good evening';
-      case 'night': return 'Late night sanctuary';
-    }
-  };
+    const breathInterval = setInterval(() => {
+      setBreathPhase(prev => (prev + 1) % 100);
+    }, 80);
+
+    return () => clearInterval(breathInterval);
+  }, []);
 
   const isDark = timeOfDay === 'evening' || timeOfDay === 'night';
 
+  const getGreeting = () => {
+    const name = userName ? `, ${userName}` : '';
+    switch (timeOfDay) {
+      case 'morning': return `Good morning${name}`;
+      case 'afternoon': return `Good afternoon${name}`;
+      case 'evening': return `Good evening${name}`;
+      case 'night': return `Welcome${name}`;
+    }
+  };
+
+  const handlePortalEnter = (roomId: string) => {
+    setIsEntering(true);
+    setActivePortal(roomId);
+    setTimeout(() => onRoomSelect(roomId), 800);
+  };
+
+  const handleTalkToVera = () => {
+    setIsEntering(true);
+    setTimeout(() => router.push('/chat'), 600);
+  };
+
+  const breathValue = Math.sin(breathPhase * 0.0628) * 0.5 + 0.5;
+  const dustPositions = [65, 78, 45, 82, 55, 72, 38, 88, 50, 75, 42, 68, 58, 85, 48];
+
   return (
-    <>
+    <div className={`sanctuary ${isEntering ? 'entering' : ''}`}>
       <style jsx>{`
-        .sanctuary-container {
-          min-height: 100vh;
-          min-height: 100dvh;
-          background: ${isDark 
-            ? 'linear-gradient(180deg, #0e0e1a 0%, #1a1a2e 50%, #0e0e1a 100%)'
-            : 'linear-gradient(180deg, #faf8f5 0%, #f5f0e8 60%, #ebe5db 100%)'};
-          position: relative;
+        .sanctuary {
+          position: fixed;
+          inset: 0;
           overflow: hidden;
-          transition: background 1s ease;
+          font-family: 'Outfit', -apple-system, sans-serif;
+          transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .sanctuary.entering { opacity: 0; transform: scale(1.05); }
+
+        .room-environment {
+          position: absolute;
+          inset: 0;
+          background: ${isDark 
+            ? 'linear-gradient(180deg, #0a0a12 0%, #12121f 40%, #0d0d18 100%)'
+            : 'linear-gradient(180deg, #f8f6f2 0%, #f0ebe3 50%, #e8e2d8 100%)'};
+          transition: background 2s ease;
         }
 
         .vignette {
           position: absolute;
           inset: 0;
+          background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,${isDark ? 0.4 : 0.15}) 100%);
           pointer-events: none;
-          z-index: 9;
-          background:
-            radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,${isDark ? 0.35 : 0.18}) 100%);
+          z-index: 5;
         }
 
-        /* ==================== INTRO SEQUENCE (CSS-only) ==================== */
-        .intro-bg {
-          opacity: 0;
-          animation: introFadeIn 0.5s ease-out forwards;
-        }
-
-        .intro-orb {
-          opacity: 0;
-          transform: scale(0.9);
-          animation: introPop 0.5s ease-out forwards;
-          animation-delay: 0.5s;
-        }
-
-        .intro-greeting {
-          opacity: 0;
-          transform: translateY(14px);
-          animation: introRise 0.5s ease-out forwards;
-          animation-delay: 1s;
-        }
-
-        .intro-quick {
-          opacity: 0;
-          transform: translateY(14px);
-          animation: introRise 0.5s ease-out forwards;
-          animation-delay: 1.5s;
-        }
-
-        .intro-grid {
-          opacity: 0;
-          transform: translateY(18px);
-          animation: introRise 0.5s ease-out forwards;
-          animation-delay: 2s;
-        }
-
-        @keyframes introFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes introPop {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes introRise {
-          from { opacity: 0; transform: translateY(14px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .intro-bg,
-          .intro-orb,
-          .intro-greeting,
-          .intro-quick,
-          .intro-grid {
-            opacity: 1;
-            transform: none;
-            animation: none;
-          }
-        }
-
-        /* Ambient Light Layers */
-        .light-layer {
+        .architecture {
           position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
+          inset: 0;
           pointer-events: none;
+          opacity: ${isLoaded ? 1 : 0};
+          transition: opacity 1.5s ease 0.3s;
         }
 
-        .sunlight {
+        .wall {
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 65%;
           background: ${isDark
-            ? 'radial-gradient(ellipse 60% 60% at 80% 20%, rgba(100, 100, 180, 0.15) 0%, transparent 50%)'
-            : `radial-gradient(ellipse 80% 100% at 75% 20%, rgba(255, 248, 235, 0.9) 0%, transparent 50%),
-               radial-gradient(ellipse 60% 80% at 80% 30%, rgba(255, 245, 225, 0.6) 0%, transparent 40%)`};
-          animation: sunPulse 8s ease-in-out infinite;
+            ? 'linear-gradient(180deg, #0e0e18 0%, #141420 60%, #18182a 100%)'
+            : 'linear-gradient(180deg, #faf8f5 0%, #f5f0e8 60%, #ebe5db 100%)'};
         }
 
-        @keyframes sunPulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.85; }
-        }
-
-        .ambient-glow {
-          background: ${isDark
-            ? 'radial-gradient(ellipse 100% 60% at 50% 100%, rgba(139, 119, 183, 0.1) 0%, transparent 60%)'
-            : `radial-gradient(ellipse 100% 60% at 50% 100%, rgba(212, 200, 184, 0.3) 0%, transparent 60%),
-               radial-gradient(ellipse 80% 40% at 20% 80%, rgba(168, 181, 160, 0.15) 0%, transparent 50%)`};
-        }
-
-        /* Light Beams */
-        .light-beams {
-          position: absolute;
-          top: 0;
-          right: 10%;
-          width: 45%;
-          height: 100%;
-          overflow: hidden;
-          pointer-events: none;
-          opacity: ${isDark ? 0.3 : 1};
-        }
-
-        .beam {
-          position: absolute;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(100, 120, 180, 0.2) 0%, rgba(100, 120, 180, 0.1) 30%, transparent 70%)'
-            : 'linear-gradient(180deg, rgba(255, 250, 240, 0.4) 0%, rgba(255, 248, 235, 0.2) 30%, rgba(255, 245, 225, 0.05) 70%, transparent 100%)'};
-          transform-origin: top center;
-          animation: beamFloat 12s ease-in-out infinite;
-        }
-
-        .beam-1 {
-          width: 120px;
-          height: 110%;
-          top: -5%;
-          left: 20%;
-          transform: rotate(-8deg) skewX(-5deg);
-          animation-delay: 0s;
-        }
-
-        .beam-2 {
-          width: 80px;
-          height: 105%;
-          top: -5%;
-          left: 45%;
-          transform: rotate(-5deg) skewX(-3deg);
-          animation-delay: -3s;
-          opacity: 0.7;
-        }
-
-        .beam-3 {
-          width: 100px;
-          height: 108%;
-          top: -5%;
-          left: 65%;
-          transform: rotate(-10deg) skewX(-4deg);
-          animation-delay: -6s;
-          opacity: 0.5;
-        }
-
-        .beam-4 {
-          width: 60px;
-          height: 112%;
-          top: -6%;
-          left: 8%;
-          transform: rotate(-12deg) skewX(-6deg);
-          animation-delay: -9s;
-          opacity: 0.35;
-        }
-
-        .beam-5 {
-          width: 140px;
-          height: 110%;
-          top: -6%;
-          left: 78%;
-          transform: rotate(-7deg) skewX(-4deg);
-          animation-delay: -12s;
-          opacity: 0.25;
-        }
-
-        @keyframes beamFloat {
-          0%, 100% { transform: rotate(-8deg) skewX(-5deg) translateX(0); opacity: 1; }
-          50% { transform: rotate(-6deg) skewX(-4deg) translateX(10px); opacity: 0.8; }
-        }
-
-        /* Dust Particles in Light */
-        .dust-container {
-          position: absolute;
-          top: 0;
-          right: 5%;
-          width: 50%;
-          height: 100%;
-          pointer-events: none;
-          overflow: hidden;
-        }
-
-        .dust {
-          position: absolute;
-          border-radius: 50%;
-          background: ${isDark ? 'rgba(200, 200, 255, 0.6)' : 'rgba(255, 250, 240, 0.8)'};
-          box-shadow: 0 0 6px ${isDark ? 'rgba(200, 200, 255, 0.4)' : 'rgba(255, 250, 240, 0.5)'};
-          animation: dustFloat linear infinite;
-        }
-
-        @keyframes dustFloat {
-          0% {
-            transform: translateY(100vh) translateX(0) scale(0);
-            opacity: 0;
-          }
-          10% {
-            opacity: 1;
-            transform: translateY(80vh) translateX(10px) scale(1);
-          }
-          90% {
-            opacity: 0.8;
-          }
-          100% {
-            transform: translateY(-20vh) translateX(-20px) scale(0.5);
-            opacity: 0;
-          }
-        }
-
-        /* Floating particles */
-        .particle {
-          position: absolute;
-          border-radius: 50%;
-          background: ${isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 248, 235, 0.8)'};
-          box-shadow: 0 0 ${isDark ? '10px' : '6px'} ${isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 248, 235, 0.5)'};
-          animation: float linear infinite;
-        }
-
-        @keyframes float {
-          0% { transform: translateY(100vh) translateX(-12px) scale(0); opacity: 0; }
-          10% { opacity: 0.85; transform: translateY(80vh) translateX(18px) scale(1); }
-          50% { opacity: 0.65; transform: translateY(40vh) translateX(-22px) scale(1.05); }
-          90% { opacity: 0.55; }
-          100% { transform: translateY(-20vh) translateX(26px) scale(0.5); opacity: 0; }
-        }
-
-        /* Room Structure Background */
-        .room-bg {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 70%;
-          pointer-events: none;
-          opacity: ${isDark ? 0.55 : 0.6};
-        }
-
-        /* Floor */
         .floor {
           position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 45%;
+          bottom: 0; left: -20%; right: -20%;
+          height: 50%;
           background: ${isDark
-            ? 'linear-gradient(180deg, rgba(30, 30, 50, 0.6) 0%, rgba(20, 20, 35, 0.8) 50%, rgba(15, 15, 25, 0.9) 100%)'
-            : 'linear-gradient(180deg, rgba(245, 240, 232, 0.9) 0%, rgba(232, 224, 212, 0.95) 50%, rgba(221, 213, 200, 1) 100%)'};
-          transform: perspective(850px) rotateX(68deg);
-          transform-origin: bottom center;
+            ? 'linear-gradient(180deg, #18182a 0%, #0f0f1a 50%, #0a0a12 100%)'
+            : 'linear-gradient(180deg, #ebe5db 0%, #ddd5c8 50%, #d0c8ba 100%)'};
+          transform: perspective(1000px) rotateX(65deg);
+          transform-origin: top center;
         }
 
-        .floor-texture {
+        .floor-reflection {
           position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-image: repeating-linear-gradient(90deg, 
-            transparent 0px, 
-            transparent 150px, 
-            ${isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'} 150px, 
-            ${isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'} 152px);
-          opacity: 0.5;
+          top: 0; left: 0; right: 0;
+          height: 30%;
+          background: linear-gradient(180deg, ${isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.3)'} 0%, transparent 100%);
         }
 
-        /* Wall */
-        .wall-back {
+        /* ============ WINDOW WITH TREES ============ */
+
+        .window-area {
           position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 70%;
+          top: 8%; right: 8%;
+          width: 28%; max-width: 280px;
+          aspect-ratio: 3/4;
+        }
+
+        .window-frame {
+          position: absolute;
+          inset: 0;
           background: ${isDark
-            ? 'linear-gradient(180deg, rgba(20, 20, 35, 0.9) 0%, rgba(26, 26, 46, 0.95) 60%, rgba(30, 30, 50, 1) 100%)'
-            : 'linear-gradient(180deg, rgba(250, 248, 245, 1) 0%, rgba(245, 240, 232, 1) 60%, rgba(235, 229, 219, 1) 100%)'};
-        }
-
-        /* Window */
-        .window-container {
-          position: absolute;
-          top: 8%;
-          right: 8%;
-          width: 28%;
-          height: 45%;
-        }
-
-        .window {
-          width: 100%;
-          height: 100%;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(20, 25, 50, 0.9) 0%, rgba(30, 40, 70, 0.8) 50%, rgba(25, 30, 55, 0.9) 100%)'
-            : 'linear-gradient(180deg, rgba(232, 244, 248, 0.9) 0%, rgba(212, 232, 237, 0.8) 30%, rgba(200, 221, 229, 0.85) 60%, rgba(240, 245, 242, 0.9) 100%)'};
-          border: 4px solid ${isDark ? 'rgba(60, 60, 80, 0.6)' : 'rgba(212, 200, 184, 0.9)'};
-          box-shadow: 
-            inset 0 0 60px ${isDark ? 'rgba(100, 120, 180, 0.2)' : 'rgba(255, 255, 255, 0.8)'},
-            0 10px 40px ${isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.08)'};
-          position: relative;
+            ? 'linear-gradient(180deg, #0a1020 0%, #151535 40%, #0d0d28 100%)'
+            : 'linear-gradient(180deg, #d4e8f0 0%, #b8d8e8 30%, #a8d0e0 60%, #c8e0ec 100%)'};
+          border: 6px solid ${isDark ? '#252540' : '#c8b8a8'};
           border-radius: 4px;
+          box-shadow: inset 0 0 80px ${isDark ? 'rgba(100, 120, 200, 0.1)' : 'rgba(255, 255, 255, 0.6)'}, 0 20px 60px ${isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)'};
+          overflow: hidden;
         }
 
-        .window-frame-v {
+        /* Trees visible through window */
+        .window-trees {
           position: absolute;
-          top: 0;
+          bottom: 10%;
+          left: 0; right: 0;
+          height: 60%;
+          pointer-events: none;
+        }
+
+        .tree {
+          position: absolute;
+          bottom: 0;
+        }
+
+        .tree-trunk {
+          position: absolute;
+          bottom: 0;
           left: 50%;
           transform: translateX(-50%);
-          width: 4px;
-          height: 100%;
-          background: ${isDark ? 'rgba(60, 60, 80, 0.6)' : 'rgba(212, 200, 184, 0.9)'};
+          background: ${isDark ? '#1a1a30' : '#6b7b68'};
+          border-radius: 2px;
         }
 
-        .window-frame-h {
+        .tree-canopy {
           position: absolute;
-          top: 50%;
-          left: 0;
-          transform: translateY(-50%);
-          width: 100%;
-          height: 4px;
-          background: ${isDark ? 'rgba(60, 60, 80, 0.6)' : 'rgba(212, 200, 184, 0.9)'};
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border-radius: 50% 50% 45% 45%;
+        }
+
+        .tree-1 { left: 15%; }
+        .tree-1 .tree-trunk { width: 6px; height: 25px; }
+        .tree-1 .tree-canopy { width: 35px; height: 45px; background: ${isDark ? 'rgba(30, 50, 40, 0.9)' : 'rgba(80, 110, 80, 0.7)'}; }
+
+        .tree-2 { left: 40%; }
+        .tree-2 .tree-trunk { width: 8px; height: 35px; }
+        .tree-2 .tree-canopy { width: 50px; height: 60px; background: ${isDark ? 'rgba(25, 45, 35, 0.95)' : 'rgba(70, 100, 70, 0.75)'}; }
+
+        .tree-3 { left: 70%; }
+        .tree-3 .tree-trunk { width: 5px; height: 20px; }
+        .tree-3 .tree-canopy { width: 30px; height: 38px; background: ${isDark ? 'rgba(35, 55, 45, 0.85)' : 'rgba(90, 120, 85, 0.65)'}; }
+
+        .tree-4 { left: 88%; }
+        .tree-4 .tree-trunk { width: 4px; height: 15px; }
+        .tree-4 .tree-canopy { width: 22px; height: 28px; background: ${isDark ? 'rgba(30, 50, 40, 0.8)' : 'rgba(85, 115, 80, 0.6)'}; }
+
+        /* Distant trees/hills */
+        .tree-line {
+          position: absolute;
+          bottom: 0;
+          left: -10%; right: -10%;
+          height: 25%;
+          background: ${isDark 
+            ? 'linear-gradient(180deg, transparent 0%, rgba(20, 35, 30, 0.6) 50%, rgba(15, 30, 25, 0.8) 100%)'
+            : 'linear-gradient(180deg, transparent 0%, rgba(100, 130, 100, 0.3) 50%, rgba(80, 110, 80, 0.4) 100%)'};
+          border-radius: 100% 100% 0 0;
+        }
+
+        .window-mullion-v {
+          position: absolute;
+          top: 0; left: 50%; transform: translateX(-50%);
+          width: 6px; height: 100%;
+          background: ${isDark ? '#252540' : '#c8b8a8'};
+          z-index: 2;
+        }
+
+        .window-mullion-h {
+          position: absolute;
+          top: 50%; left: 0; transform: translateY(-50%);
+          width: 100%; height: 6px;
+          background: ${isDark ? '#252540' : '#c8b8a8'};
+          z-index: 2;
         }
 
         .window-sill {
           position: absolute;
-          bottom: -12px;
-          left: -8px;
-          right: -8px;
-          height: 12px;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(60, 60, 80, 0.7) 0%, rgba(50, 50, 70, 0.8) 100%)'
-            : 'linear-gradient(180deg, rgba(212, 200, 184, 1) 0%, rgba(196, 184, 168, 1) 100%)'};
-          border-radius: 0 0 3px 3px;
+          bottom: -16px; left: -12px; right: -12px;
+          height: 16px;
+          background: ${isDark ? 'linear-gradient(180deg, #2a2a48 0%, #202038 100%)' : 'linear-gradient(180deg, #c8b8a8 0%, #b8a898 100%)'};
+          border-radius: 0 0 4px 4px;
+          z-index: 3;
         }
 
-        /* Moon visible through window at night */
-        .moon-window {
+        .celestial-body {
           position: absolute;
-          top: 20%;
-          right: 25%;
-          width: 25px;
-          height: 25px;
+          top: 12%; right: 18%;
+          width: ${isDark ? '24px' : '0px'}; height: ${isDark ? '24px' : '0px'};
           border-radius: 50%;
-          background: radial-gradient(circle at 30% 30%, #f0f0ff 0%, #d0d0e8 50%, #b8b8d0 100%);
-          box-shadow: 0 0 30px rgba(200, 210, 255, 0.6);
-          opacity: ${isDark ? 1 : 0};
-          transition: opacity 1s ease;
+          background: ${isDark ? 'radial-gradient(circle at 35% 35%, #f4f4ff 0%, #d8d8f0 50%, #b8b8e0 100%)' : 'transparent'};
+          box-shadow: ${isDark ? '0 0 30px rgba(200, 210, 255, 0.5)' : 'none'};
+          transition: all 1s ease;
+          z-index: 1;
         }
 
-        /* Sofa */
-        .sofa-container {
+        /* ============ LIGHT BEAMS ============ */
+
+        .light-beams {
           position: absolute;
-          bottom: 18%;
-          left: 6%;
-          width: 38%;
-          height: auto;
+          top: 0; right: 5%;
+          width: 50%; height: 100%;
+          overflow: hidden;
+          pointer-events: none;
+          opacity: ${isDark ? 0.2 : 0.85};
         }
 
-        .sofa {
-          position: relative;
-          width: 100%;
-          height: 140px;
+        .beam {
+          position: absolute;
+          top: -10%;
+          background: ${isDark
+            ? 'linear-gradient(180deg, rgba(100, 120, 200, 0.1) 0%, rgba(100, 120, 200, 0.03) 40%, transparent 80%)'
+            : 'linear-gradient(180deg, rgba(255, 252, 245, 0.45) 0%, rgba(255, 250, 240, 0.15) 40%, transparent 80%)'};
+          transform-origin: top center;
+          animation: beamSway 20s ease-in-out infinite;
         }
+
+        .beam-1 { width: 140px; height: 120%; left: 15%; transform: rotate(-12deg); animation-delay: 0s; }
+        .beam-2 { width: 100px; height: 115%; left: 35%; transform: rotate(-8deg); animation-delay: -5s; opacity: 0.7; }
+        .beam-3 { width: 120px; height: 118%; left: 55%; transform: rotate(-15deg); animation-delay: -10s; opacity: 0.5; }
+        .beam-4 { width: 80px; height: 110%; left: 75%; transform: rotate(-6deg); animation-delay: -15s; opacity: 0.4; }
+
+        @keyframes beamSway {
+          0%, 100% { transform: rotate(-10deg) translateX(0); }
+          50% { transform: rotate(-7deg) translateX(15px); }
+        }
+
+        /* ============ DUST PARTICLES ============ */
+
+        .dust-field {
+          position: absolute;
+          top: 0; right: 0;
+          width: 60%; height: 100%;
+          overflow: hidden;
+          pointer-events: none;
+        }
+
+        .dust {
+          position: absolute;
+          width: 3px; height: 3px;
+          background: ${isDark ? 'rgba(180, 190, 255, 0.5)' : 'rgba(255, 250, 240, 0.85)'};
+          border-radius: 50%;
+          box-shadow: 0 0 6px ${isDark ? 'rgba(180, 190, 255, 0.3)' : 'rgba(255, 250, 240, 0.5)'};
+          animation: dustRise 18s linear infinite;
+        }
+
+        @keyframes dustRise {
+          0% { transform: translateY(100vh) scale(0); opacity: 0; }
+          10% { opacity: 0.8; transform: translateY(85vh) scale(1); }
+          90% { opacity: 0.3; }
+          100% { transform: translateY(-10vh) scale(0.4); opacity: 0; }
+        }
+
+        /* ============ SOFA ============ */
+
+        .sofa-group {
+          position: absolute;
+          bottom: 22%; left: 25%;
+          width: 38%; max-width: 380px;
+        }
+
+        .sofa { position: relative; height: 140px; }
 
         .sofa-back {
           position: absolute;
-          bottom: 50px;
-          left: 0;
-          width: 100%;
-          height: 90px;
+          bottom: 50px; left: 0; right: 0;
+          height: 95px;
           background: ${isDark
-            ? 'linear-gradient(180deg, rgba(80, 70, 100, 0.7) 0%, rgba(70, 60, 90, 0.8) 50%, rgba(60, 50, 80, 0.9) 100%)'
-            : 'linear-gradient(180deg, rgba(232, 224, 212, 0.95) 0%, rgba(216, 207, 192, 0.9) 50%, rgba(200, 191, 176, 0.85) 100%)'};
-          border-radius: 16px 16px 0 0;
-          box-shadow: 
-            inset 0 10px 30px ${isDark ? 'rgba(100, 90, 130, 0.3)' : 'rgba(255,255,255,0.5)'},
-            0 -5px 20px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'};
+            ? 'linear-gradient(180deg, #3a3250 0%, #2d2840 50%, #252238 100%)'
+            : 'linear-gradient(180deg, #e8e0d4 0%, #dcd4c4 50%, #d0c8b8 100%)'};
+          border-radius: 20px 20px 0 0;
+          box-shadow: inset 0 15px 40px ${isDark ? 'rgba(80, 70, 120, 0.2)' : 'rgba(255, 255, 255, 0.5)'};
         }
 
         .sofa-seat {
           position: absolute;
-          bottom: 25px;
-          left: 5%;
-          width: 90%;
-          height: 40px;
+          bottom: 28px; left: 6%; right: 6%;
+          height: 38px;
           background: ${isDark
-            ? 'linear-gradient(180deg, rgba(90, 80, 110, 0.8) 0%, rgba(80, 70, 100, 0.9) 100%)'
-            : 'linear-gradient(180deg, rgba(240, 232, 220, 1) 0%, rgba(224, 216, 204, 1) 100%)'};
+            ? 'linear-gradient(180deg, #403858 0%, #342e48 100%)'
+            : 'linear-gradient(180deg, #f0e8dc 0%, #e4dcd0 100%)'};
           border-radius: 12px;
-          box-shadow: 
-            0 8px 25px ${isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.08)'},
-            inset 0 5px 15px ${isDark ? 'rgba(100, 90, 130, 0.2)' : 'rgba(255,255,255,0.6)'};
+          box-shadow: 0 12px 35px ${isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.08)'};
         }
 
         .sofa-cushion {
           position: absolute;
-          bottom: 55px;
-          width: 26%;
-          height: 55px;
+          bottom: 60px;
+          width: 28%; height: 55px;
           background: ${isDark
-            ? 'linear-gradient(135deg, rgba(85, 75, 105, 0.85) 0%, rgba(75, 65, 95, 0.9) 100%)'
-            : 'linear-gradient(135deg, rgba(235, 227, 215, 1) 0%, rgba(221, 213, 201, 1) 100%)'};
-          border-radius: 10px;
-          box-shadow: 
-            inset 0 5px 15px ${isDark ? 'rgba(100, 90, 130, 0.2)' : 'rgba(255,255,255,0.5)'},
-            0 5px 15px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'};
+            ? 'linear-gradient(160deg, #3d3555 0%, #322c48 100%)'
+            : 'linear-gradient(160deg, #ebe3d7 0%, #dfd7cb 100%)'};
+          border-radius: 12px;
+          box-shadow: inset 0 8px 20px ${isDark ? 'rgba(80, 70, 120, 0.15)' : 'rgba(255, 255, 255, 0.5)'}, 4px 8px 20px ${isDark ? 'rgba(0, 0, 0, 0.25)' : 'rgba(0, 0, 0, 0.06)'};
         }
 
         .cushion-1 { left: 8%; }
-        .cushion-2 { left: 37%; }
-        .cushion-3 { left: 66%; }
+        .cushion-2 { left: 36%; }
+        .cushion-3 { left: 64%; }
 
         .sofa-arm {
           position: absolute;
-          bottom: 25px;
-          width: 10%;
-          height: 70px;
+          bottom: 28px;
+          width: 9%; height: 75px;
           background: ${isDark
-            ? 'linear-gradient(180deg, rgba(80, 70, 100, 0.8) 0%, rgba(70, 60, 90, 0.9) 100%)'
-            : 'linear-gradient(180deg, rgba(224, 216, 204, 1) 0%, rgba(208, 200, 188, 1) 100%)'};
-          border-radius: 12px;
-          box-shadow: 0 5px 20px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'};
+            ? 'linear-gradient(180deg, #3a3250 0%, #2d2840 100%)'
+            : 'linear-gradient(180deg, #e0d8cc 0%, #d4ccc0 100%)'};
+          border-radius: 14px;
+          box-shadow: 6px 10px 25px ${isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.08)'};
         }
 
-        .arm-left { left: 0; border-radius: 12px 4px 4px 12px; }
-        .arm-right { right: 0; border-radius: 4px 12px 12px 4px; }
+        .arm-left { left: 0; border-radius: 14px 6px 6px 14px; }
+        .arm-right { right: 0; border-radius: 6px 14px 14px 6px; }
 
-        .sofa-legs {
+        .sofa-leg {
           position: absolute;
           bottom: 0;
-          width: 6px;
-          height: 25px;
+          width: 8px; height: 28px;
           background: ${isDark
-            ? 'linear-gradient(180deg, rgba(60, 50, 70, 0.9) 0%, rgba(50, 40, 60, 1) 100%)'
-            : 'linear-gradient(180deg, rgba(139, 115, 85, 1) 0%, rgba(107, 85, 69, 1) 100%)'};
-          border-radius: 2px;
+            ? 'linear-gradient(180deg, #252238 0%, #1a1828 100%)'
+            : 'linear-gradient(180deg, #8b7355 0%, #6b5545 100%)'};
+          border-radius: 3px;
         }
 
-        .leg-1 { left: 10%; }
-        .leg-2 { left: 35%; }
-        .leg-3 { right: 35%; }
-        .leg-4 { right: 10%; }
+        .leg-1 { left: 12%; }
+        .leg-2 { left: 38%; }
+        .leg-3 { right: 38%; }
+        .leg-4 { right: 12%; }
 
-        /* Throw Pillows */
         .throw-pillow {
           position: absolute;
-          width: 45px;
-          height: 38px;
-          border-radius: 8px;
-          box-shadow: 0 3px 10px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'};
+          bottom: 88px;
+          width: 48px; height: 42px;
+          border-radius: 10px;
+          box-shadow: 3px 6px 15px ${isDark ? 'rgba(0, 0, 0, 0.25)' : 'rgba(0, 0, 0, 0.08)'};
         }
 
-        .pillow-sage {
-          bottom: 80px;
-          left: 12%;
-          background: ${isDark
-            ? 'linear-gradient(135deg, rgba(100, 130, 100, 0.8) 0%, rgba(80, 110, 80, 0.9) 100%)'
-            : 'linear-gradient(135deg, rgba(168, 181, 160, 1) 0%, rgba(143, 165, 136, 1) 100%)'};
-          transform: rotate(-8deg);
+        .pillow-accent-1 {
+          left: 14%;
+          background: ${isDark ? 'linear-gradient(135deg, #4a6b5a 0%, #3a5a4a 100%)' : 'linear-gradient(135deg, #a8b5a0 0%, #8fa888 100%)'};
+          transform: rotate(-10deg);
         }
 
-        .pillow-terracotta {
-          bottom: 75px;
-          right: 15%;
-          background: ${isDark
-            ? 'linear-gradient(135deg, rgba(160, 100, 80, 0.8) 0%, rgba(140, 85, 65, 0.9) 100%)'
-            : 'linear-gradient(135deg, rgba(196, 164, 132, 1) 0%, rgba(184, 148, 116, 1) 100%)'};
-          transform: rotate(5deg);
+        .pillow-accent-2 {
+          right: 16%;
+          background: ${isDark ? 'linear-gradient(135deg, #6b5a4a 0%, #5a4a3a 100%)' : 'linear-gradient(135deg, #c4a890 0%, #b89878 100%)'};
+          transform: rotate(8deg);
         }
 
-        /* Coffee Table */
+        /* ============ COFFEE TABLE - CENTERED ============ */
+
         .coffee-table {
           position: absolute;
-          bottom: 12%;
-          left: 25%;
-          width: 20%;
+          bottom: 10%; 
+          left: 32%;
+          width: 18%; 
+          max-width: 160px;
         }
 
-        .table-top {
-          width: 100%;
-          height: 12px;
+        .table-surface {
+          height: 14px;
           background: ${isDark
-            ? 'linear-gradient(180deg, rgba(80, 65, 50, 0.9) 0%, rgba(70, 55, 40, 1) 100%)'
-            : 'linear-gradient(180deg, rgba(160, 128, 96, 1) 0%, rgba(139, 112, 80, 1) 100%)'};
+            ? 'linear-gradient(180deg, #4a3a2a 0%, #3a2a1a 100%)'
+            : 'linear-gradient(180deg, #a08060 0%, #8a6a50 100%)'};
           border-radius: 20px;
-          box-shadow: 
-            0 8px 25px ${isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0,0,0,0.15)'},
-            inset 0 2px 5px ${isDark ? 'rgba(100, 85, 70, 0.3)' : 'rgba(255,255,255,0.2)'};
+          box-shadow: 0 12px 40px ${isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.15)'};
         }
 
         .table-legs {
           display: flex;
           justify-content: space-between;
-          padding: 0 15%;
-          margin-top: 4px;
+          padding: 0 18%;
+          margin-top: 6px;
         }
 
         .table-leg {
-          width: 6px;
-          height: 30px;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(70, 55, 40, 0.9) 0%, rgba(55, 40, 30, 1) 100%)'
-            : 'linear-gradient(180deg, rgba(139, 112, 80, 1) 0%, rgba(107, 80, 64, 1) 100%)'};
-          border-radius: 2px;
+          width: 8px; height: 35px;
+          background: ${isDark ? 'linear-gradient(180deg, #3a2a1a 0%, #2a1a0a 100%)' : 'linear-gradient(180deg, #8a6a50 0%, #6a5040 100%)'};
+          border-radius: 3px;
         }
 
-        /* Items on coffee table */
-        .table-items {
+        .table-objects {
           position: absolute;
-          top: -35px;
-          left: 50%;
+          top: -45px; left: 50%;
           transform: translateX(-50%);
           display: flex;
-          gap: 20px;
           align-items: flex-end;
+          gap: 25px;
         }
 
         .vase {
-          width: 18px;
-          height: 35px;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(200, 195, 190, 0.9) 0%, rgba(180, 175, 170, 1) 100%)'
-            : 'linear-gradient(180deg, rgba(245, 240, 232, 1) 0%, rgba(224, 216, 204, 1) 100%)'};
-          border-radius: 6px 6px 4px 4px;
+          width: 22px; height: 42px;
+          background: ${isDark ? 'linear-gradient(180deg, #e8e0d8 0%, #d0c8c0 100%)' : 'linear-gradient(180deg, #f8f4f0 0%, #e8e4e0 100%)'};
+          border-radius: 8px 8px 5px 5px;
+          box-shadow: 4px 6px 15px ${isDark ? 'rgba(0, 0, 0, 0.25)' : 'rgba(0, 0, 0, 0.1)'};
           position: relative;
-          box-shadow: 0 3px 10px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'};
         }
 
-        .vase-flowers {
+        .stems {
           position: absolute;
-          top: -20px;
-          left: 50%;
+          top: -28px; left: 50%;
           transform: translateX(-50%);
-          width: 25px;
-          height: 25px;
         }
 
-        .flower-stem {
+        .stem {
           position: absolute;
-          bottom: 0;
-          width: 2px;
-          height: 20px;
-          background: rgba(120, 150, 100, 0.8);
+          width: 2px; height: 28px;
+          background: #6a8a60;
+          border-radius: 1px;
+          transform-origin: bottom center;
         }
 
-        .flower-stem-1 { left: 8px; transform: rotate(-10deg); }
-        .flower-stem-2 { left: 12px; }
-        .flower-stem-3 { left: 16px; transform: rotate(10deg); }
+        .stem-1 { transform: rotate(-15deg); left: -6px; }
+        .stem-2 { left: 0; height: 32px; }
+        .stem-3 { transform: rotate(15deg); left: 6px; }
 
-        .book-stack {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
+        .books { display: flex; flex-direction: column; gap: 3px; }
 
         .book {
-          height: 6px;
+          height: 8px;
           border-radius: 1px;
-          box-shadow: 0 1px 3px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'};
+          box-shadow: 2px 2px 6px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'};
         }
 
-        .book-1 { width: 35px; background: ${isDark ? 'rgba(100, 130, 100, 0.8)' : 'rgba(168, 181, 160, 1)'}; }
-        .book-2 { width: 30px; background: ${isDark ? 'rgba(160, 100, 80, 0.8)' : 'rgba(196, 164, 132, 1)'}; }
-        .book-3 { width: 32px; background: ${isDark ? 'rgba(180, 170, 150, 0.8)' : 'rgba(212, 200, 184, 1)'}; }
+        .book-1 { width: 40px; background: ${isDark ? '#4a6a5a' : '#8aa898'}; }
+        .book-2 { width: 35px; background: ${isDark ? '#6a5040' : '#c4a484'}; }
+        .book-3 { width: 38px; background: ${isDark ? '#5a5a6a' : '#a8a8b8'}; }
 
-        /* Candle */
         .candle {
-          width: 14px;
-          height: 22px;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(250, 248, 245, 0.9) 0%, rgba(232, 224, 212, 1) 100%)'
-            : 'linear-gradient(180deg, rgba(250, 248, 245, 1) 0%, rgba(232, 224, 212, 1) 100%)'};
-          border-radius: 2px;
           position: relative;
-          box-shadow: 0 3px 8px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'};
+          width: 16px; height: 28px;
+          background: linear-gradient(180deg, #faf8f4 0%, #e8e4dc 100%);
+          border-radius: 3px;
         }
 
-        .candle-flame {
+        .flame {
           position: absolute;
-          top: -10px;
-          left: 50%;
+          top: -14px; left: 50%;
           transform: translateX(-50%);
-          width: 6px;
-          height: 12px;
-          background: radial-gradient(ellipse at bottom, rgba(255, 200, 100, 0.95) 0%, rgba(255, 150, 50, 0.7) 50%, transparent 100%);
-          border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-          animation: flicker 0.5s ease-in-out infinite alternate;
+          width: 8px; height: 16px;
+          background: radial-gradient(ellipse at 50% 80%, rgba(255, 220, 140, 0.95) 0%, rgba(255, 160, 60, 0.7) 50%, transparent 100%);
+          border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+          animation: flicker 0.4s ease-in-out infinite alternate;
         }
 
-        .candle-glow {
+        .flame-glow {
           position: absolute;
-          top: -25px;
-          left: 50%;
+          top: -35px; left: 50%;
           transform: translateX(-50%);
-          width: 50px;
-          height: 50px;
-          background: radial-gradient(circle, rgba(255, 179, 71, 0.2) 0%, transparent 70%);
+          width: 60px; height: 60px;
+          background: radial-gradient(circle, rgba(255, 180, 80, 0.2) 0%, transparent 70%);
           animation: glowPulse 2s ease-in-out infinite;
         }
 
         @keyframes flicker {
-          0% { transform: translateX(-50%) scale(1) rotate(-2deg); opacity: 1; }
-          100% { transform: translateX(-50%) scale(1.1) rotate(2deg); opacity: 0.9; }
+          0% { transform: translateX(-50%) scaleY(1) rotate(-2deg); }
+          100% { transform: translateX(-50%) scaleY(1.12) rotate(2deg); }
         }
 
         @keyframes glowPulse {
-          0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.5; }
-          50% { transform: translateX(-50%) scale(1.2); opacity: 0.3; }
+          0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+          50% { opacity: 0.35; transform: translateX(-50%) scale(1.15); }
         }
 
-        /* Floor Plant */
-        .floor-plant {
+        /* ============ FLOOR PLANT (NEXT TO COUCH) - PEACE LILY STYLE ============ */
+
+        .plant-group { 
+          position: absolute; 
+          bottom: 21%; 
+          left: 56%; 
+        }
+
+        .planter {
+          width: 45px; height: 40px;
+          background: ${isDark 
+            ? 'linear-gradient(180deg, #4a4040 0%, #3a3030 50%, #2a2525 100%)' 
+            : 'linear-gradient(180deg, #d4c4b0 0%, #c4b4a0 50%, #b4a490 100%)'};
+          border-radius: 5px 5px 12px 12px;
+          box-shadow: 6px 12px 25px ${isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
+          position: relative;
+        }
+
+        .planter-rim {
           position: absolute;
-          bottom: 15%;
-          right: 12%;
+          top: -4px;
+          left: -3px;
+          right: -3px;
+          height: 8px;
+          background: ${isDark 
+            ? 'linear-gradient(180deg, #5a5050 0%, #4a4040 100%)' 
+            : 'linear-gradient(180deg, #e4d4c0 0%, #d4c4b0 100%)'};
+          border-radius: 4px 4px 0 0;
         }
 
-        .large-pot {
-          width: 55px;
-          height: 45px;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(160, 100, 80, 0.8) 0%, rgba(120, 70, 50, 0.9) 100%)'
-            : 'linear-gradient(180deg, rgba(196, 164, 132, 1) 0%, rgba(154, 122, 84, 1) 100%)'};
-          border-radius: 4px 4px 12px 12px;
-          box-shadow: 0 8px 25px ${isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.08)'};
-        }
-
-        .plant-leaves-container {
+        .foliage {
           position: absolute;
-          bottom: 40px;
+          bottom: 38px;
           left: 50%;
           transform: translateX(-50%);
-          width: 80px;
-          height: 90px;
+          width: 90px;
+          height: 100px;
         }
 
-        .plant-leaf {
+        /* Elegant elongated leaves */
+        .leaf {
           position: absolute;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(80, 120, 80, 0.7) 0%, rgba(60, 100, 60, 0.8) 100%)'
-            : 'linear-gradient(180deg, rgba(120, 160, 100, 0.9) 0%, rgba(100, 140, 80, 1) 100%)'};
-          border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+          background: ${isDark 
+            ? 'linear-gradient(180deg, #3a5540 0%, #2d4535 50%, #254030 100%)' 
+            : 'linear-gradient(180deg, #6a9a70 0%, #5a8a60 50%, #4a7a50 100%)'};
+          border-radius: 50% 50% 50% 50% / 90% 90% 10% 10%;
           transform-origin: bottom center;
-          animation: plantSway 6s ease-in-out infinite;
+          animation: gentleSway 6s ease-in-out infinite;
+          box-shadow: 2px 4px 8px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
         }
 
-        .leaf-1 { width: 20px; height: 50px; left: 30px; bottom: 0; transform: rotate(-15deg); animation-delay: 0s; }
-        .leaf-2 { width: 22px; height: 55px; left: 38px; bottom: 0; transform: rotate(5deg); animation-delay: -1s; }
-        .leaf-3 { width: 18px; height: 45px; left: 25px; bottom: 5px; transform: rotate(-25deg); animation-delay: -2s; }
-        .leaf-4 { width: 20px; height: 48px; left: 45px; bottom: 3px; transform: rotate(20deg); animation-delay: -3s; }
-        .leaf-5 { width: 16px; height: 40px; left: 20px; bottom: 10px; transform: rotate(-35deg); animation-delay: -4s; }
-
-        @keyframes plantSway {
-          0%, 100% { transform: rotate(var(--base-rotate, 0deg)); }
-          50% { transform: rotate(calc(var(--base-rotate, 0deg) + 3deg)); }
-        }
-
-        .leaf-1 { --base-rotate: -15deg; }
-        .leaf-2 { --base-rotate: 5deg; }
-        .leaf-3 { --base-rotate: -25deg; }
-        .leaf-4 { --base-rotate: 20deg; }
-        .leaf-5 { --base-rotate: -35deg; }
-
-        /* Side Table & Lamp */
-        .side-table {
+        /* Leaf vein */
+        .leaf::after {
+          content: '';
           position: absolute;
-          bottom: 18%;
-          right: 28%;
+          bottom: 5%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 1px;
+          height: 70%;
+          background: ${isDark ? 'rgba(100, 140, 100, 0.3)' : 'rgba(255, 255, 255, 0.2)'};
         }
 
-        .side-table-top {
-          width: 40px;
-          height: 40px;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(160, 130, 100, 0.8) 0%, rgba(140, 110, 80, 0.9) 100%)'
-            : 'linear-gradient(180deg, rgba(196, 164, 132, 1) 0%, rgba(160, 128, 96, 1) 100%)'};
-          border-radius: 50%;
-          box-shadow: 0 5px 15px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'};
+        .leaf-1 { width: 14px; height: 50px; left: 38px; bottom: 0; --sway: -8deg; animation-delay: 0s; }
+        .leaf-2 { width: 16px; height: 58px; left: 44px; bottom: 0; --sway: 3deg; animation-delay: -1s; }
+        .leaf-3 { width: 13px; height: 45px; left: 30px; bottom: 5px; --sway: -18deg; animation-delay: -2s; }
+        .leaf-4 { width: 15px; height: 52px; left: 52px; bottom: 3px; --sway: 15deg; animation-delay: -3s; }
+        .leaf-5 { width: 12px; height: 40px; left: 24px; bottom: 8px; --sway: -25deg; animation-delay: -4s; }
+        .leaf-6 { width: 14px; height: 48px; left: 58px; bottom: 6px; --sway: 22deg; animation-delay: -5s; }
+
+        /* White peace lily flowers */
+        .flower {
+          position: absolute;
+          bottom: 0;
+          transform-origin: bottom center;
+          animation: gentleSway 7s ease-in-out infinite;
         }
 
-        .side-table-leg {
-          width: 6px;
-          height: 40px;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(140, 110, 80, 0.9) 0%, rgba(100, 80, 60, 1) 100%)'
-            : 'linear-gradient(180deg, rgba(160, 128, 96, 1) 0%, rgba(128, 96, 64, 1) 100%)'};
+        .flower-stem {
+          width: 2px;
+          background: #5a7a50;
+          border-radius: 1px;
           margin: 0 auto;
+        }
+
+        .flower-bloom {
+          width: 12px;
+          height: 18px;
+          background: ${isDark 
+            ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 240, 235, 0.85) 100%)' 
+            : 'linear-gradient(180deg, #ffffff 0%, #f8f8f4 100%)'};
+          border-radius: 50% 50% 45% 45% / 70% 70% 30% 30%;
+          box-shadow: 0 4px 12px ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'};
+          position: relative;
+        }
+
+        .flower-center {
+          position: absolute;
+          bottom: 20%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 3px;
+          height: 8px;
+          background: #e8dc90;
           border-radius: 2px;
         }
 
-        .lamp {
-          position: absolute;
-          bottom: 45px;
-          left: 50%;
-          transform: translateX(-50%);
+        .flower-1 { left: 42px; --sway: 5deg; animation-delay: -0.5s; }
+        .flower-1 .flower-stem { height: 55px; }
+
+        .flower-2 { left: 54px; --sway: -8deg; animation-delay: -2.5s; }
+        .flower-2 .flower-stem { height: 48px; }
+        .flower-2 .flower-bloom { width: 10px; height: 15px; }
+
+        @keyframes gentleSway {
+          0%, 100% { transform: rotate(var(--sway, 0deg)); }
+          50% { transform: rotate(calc(var(--sway, 0deg) + 3deg)); }
         }
 
-        .lamp-shade {
-          width: 35px;
-          height: 28px;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(250, 248, 245, 0.85) 0%, rgba(232, 224, 212, 0.9) 100%)'
-            : 'linear-gradient(180deg, rgba(250, 248, 245, 1) 0%, rgba(232, 224, 212, 1) 100%)'};
-          border-radius: 4px 4px 12px 12px;
+        /* ============ TALL FLOOR LAMP ============ */
+
+        .floor-lamp-group { 
+          position: absolute; 
+          bottom: 18%; 
+          left: 20%; 
+        }
+
+        .floor-lamp {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .floor-lamp-shade {
+          width: 50px; 
+          height: 40px;
+          background: ${isDark 
+            ? 'linear-gradient(180deg, #f8f4ec 0%, #e8e0d4 100%)' 
+            : 'linear-gradient(180deg, #fcfaf6 0%, #f0ece4 100%)'};
+          border-radius: 8px 8px 20px 20px;
           box-shadow: 
-            0 5px 15px ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.08)'},
-            inset 0 -15px 25px ${isDark ? 'rgba(255, 220, 150, 0.3)' : 'rgba(255, 220, 150, 0.2)'};
+            0 8px 30px ${isDark ? 'rgba(0, 0, 0, 0.25)' : 'rgba(0, 0, 0, 0.1)'},
+            inset 0 -25px 40px ${isDark ? 'rgba(255, 200, 120, 0.3)' : 'rgba(255, 220, 150, 0.25)'};
         }
 
-        .lamp-base {
-          width: 5px;
-          height: 20px;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(160, 130, 100, 0.9) 0%, rgba(140, 110, 80, 1) 100%)'
-            : 'linear-gradient(180deg, rgba(196, 164, 132, 1) 0%, rgba(160, 128, 96, 1) 100%)'};
-          margin: 0 auto;
+        .floor-lamp-neck-top {
+          width: 8px;
+          height: 15px;
+          background: ${isDark ? '#5a4a38' : '#a08868'};
         }
 
-        .lamp-foot {
-          width: 20px;
-          height: 6px;
-          background: ${isDark
-            ? 'linear-gradient(180deg, rgba(140, 110, 80, 0.9) 0%, rgba(100, 80, 60, 1) 100%)'
-            : 'linear-gradient(180deg, rgba(160, 128, 96, 1) 0%, rgba(128, 96, 64, 1) 100%)'};
+        .floor-lamp-pole {
+          width: 6px;
+          height: 120px;
+          background: ${isDark 
+            ? 'linear-gradient(180deg, #5a4a38 0%, #4a3a28 50%, #3a2a18 100%)' 
+            : 'linear-gradient(180deg, #a08868 0%, #907858 50%, #806848 100%)'};
           border-radius: 2px;
-          margin: 0 auto;
         }
 
-        /* Rug */
-        .rug {
-          position: absolute;
-          bottom: 8%;
-          left: 12%;
-          width: 45%;
-          height: 20%;
-          background: ${isDark
-            ? `radial-gradient(ellipse at center, rgba(100, 90, 120, 0.3) 0%, rgba(80, 70, 100, 0.15) 70%),
-               linear-gradient(90deg, transparent 0%, rgba(90, 80, 110, 0.2) 20%, rgba(90, 80, 110, 0.2) 80%, transparent 100%)`
-            : `radial-gradient(ellipse at center, rgba(168, 181, 160, 0.4) 0%, rgba(168, 181, 160, 0.1) 70%),
-               linear-gradient(90deg, transparent 0%, rgba(212, 200, 184, 0.3) 20%, rgba(212, 200, 184, 0.3) 80%, transparent 100%)`};
-          border-radius: 8px;
-          transform: perspective(500px) rotateX(60deg);
-          transform-origin: bottom center;
-        }
-
-        /* Content Wrapper */
-        .content-wrapper {
-          position: relative;
-          z-index: 10;
-          min-height: 100vh;
-          min-height: 100dvh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: flex-start;
-          padding: 24px 20px 84px;
-          opacity: 1;
-          transform: none;
-        }
-
-        .orb-section {
-          width: 100%;
-          min-height: 30vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding-top: 6vh;
-        }
-
-        .content-section {
-          width: 100%;
-          min-height: 70vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: flex-start;
-          gap: 28px;
-        }
-
-        /* Time Indicator */
-        .time-indicator {
-          position: absolute;
-          top: 20px;
-          right: 20px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 8px 16px;
-          border-radius: 20px;
-          background: ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'};
-          color: ${isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(45, 45, 45, 0.7)'};
-          font-size: 0.85rem;
-          backdrop-filter: blur(10px);
-        }
-
-        .time-icon {
-          width: 20px;
-          height: 20px;
+        .floor-lamp-base {
+          width: 35px;
+          height: 10px;
+          background: ${isDark 
+            ? 'linear-gradient(180deg, #4a3a28 0%, #3a2a18 100%)' 
+            : 'linear-gradient(180deg, #907858 0%, #705838 100%)'};
           border-radius: 50%;
+          box-shadow: 4px 8px 20px ${isDark ? 'rgba(0, 0, 0, 0.35)' : 'rgba(0, 0, 0, 0.12)'};
         }
 
-        .time-icon-morning {
-          background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
-          box-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
-        }
-
-        .time-icon-afternoon {
-          background: radial-gradient(circle at 30% 30%, #fff8dc 0%, #ffd700 100%);
-          box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
-        }
-
-        .time-icon-evening {
-          background: linear-gradient(180deg, #ff6b6b 0%, #9b59b6 100%);
-          box-shadow: 0 0 10px rgba(155, 89, 182, 0.4);
-        }
-
-        .time-icon-night {
-          background: radial-gradient(circle at 70% 30%, #e8e8f0 30%, #c0c0d8 100%);
-          box-shadow: 0 0 10px rgba(200, 210, 255, 0.4);
-        }
-
-        /* VERA Orb */
-        .orb-container {
-          position: relative;
-          margin-bottom: 0;
-        }
-
-        .vera-orb {
+        .floor-lamp-glow {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
           width: 100px;
           height: 100px;
-          border-radius: 50%;
-          background: radial-gradient(circle at 30% 30%, 
-            rgba(200, 180, 240, 0.95) 0%, 
-            rgba(150, 130, 200, 0.85) 50%, 
-            rgba(120, 100, 180, 0.75) 100%);
+          background: radial-gradient(circle, ${isDark ? 'rgba(255, 220, 150, 0.15)' : 'rgba(255, 240, 200, 0.2)'} 0%, transparent 70%);
+          pointer-events: none;
+        }
+
+        /* ============ CEILING PENDANT LIGHT ============ */
+
+        .ceiling-light {
+          position: absolute;
+          top: 0;
+          left: 38%;
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .ceiling-cord {
+          width: 2px;
+          height: 80px;
+          background: ${isDark ? '#3a3a50' : '#8a8a78'};
+        }
+
+        .ceiling-canopy {
+          width: 20px;
+          height: 8px;
+          background: ${isDark ? '#2a2a40' : '#a0a090'};
+          border-radius: 0 0 4px 4px;
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .pendant-shade {
+          width: 70px;
+          height: 45px;
+          background: ${isDark 
+            ? 'linear-gradient(180deg, rgba(255, 250, 240, 0.9) 0%, rgba(240, 235, 220, 0.85) 100%)'
+            : 'linear-gradient(180deg, #faf8f4 0%, #f0ebe4 100%)'};
+          border-radius: 50% 50% 45% 45% / 30% 30% 70% 70%;
           box-shadow: 
-            0 0 60px rgba(139, 119, 183, 0.4),
-            0 0 100px rgba(139, 119, 183, 0.2),
-            inset 0 -20px 40px rgba(0, 0, 0, 0.15);
-          animation: breathe 5s ease-in-out infinite;
-          cursor: pointer;
-          transition: transform 0.3s ease;
+            0 10px 40px ${isDark ? 'rgba(255, 200, 120, 0.25)' : 'rgba(0, 0, 0, 0.1)'},
+            inset 0 -15px 30px ${isDark ? 'rgba(255, 200, 120, 0.4)' : 'rgba(255, 230, 180, 0.3)'};
         }
 
-        .vera-orb:hover {
-          transform: scale(1.05);
+        .pendant-glow {
+          position: absolute;
+          top: 60px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 150px;
+          height: 200px;
+          background: radial-gradient(ellipse at top, 
+            ${isDark ? 'rgba(255, 220, 150, 0.12)' : 'rgba(255, 245, 220, 0.25)'} 0%, 
+            transparent 70%);
+          pointer-events: none;
         }
 
-        @keyframes breathe {
-          0%, 100% { 
-            transform: scale(1); 
-            box-shadow: 0 0 60px rgba(139, 119, 183, 0.4), 0 0 100px rgba(139, 119, 183, 0.2), inset 0 -20px 40px rgba(0, 0, 0, 0.15);
-          }
-          50% { 
-            transform: scale(1.08); 
-            box-shadow: 0 0 80px rgba(139, 119, 183, 0.5), 0 0 120px rgba(139, 119, 183, 0.3), inset 0 -20px 40px rgba(0, 0, 0, 0.15);
-          }
+        /* ============ ZEN RUG (UNDER COFFEE TABLE) ============ */
+
+        .rug {
+          position: absolute;
+          bottom: 6%;
+          left: 22%;
+          width: 42%;
+          max-width: 450px;
+          height: 22%;
+          border-radius: 8px;
+          transform: perspective(800px) rotateX(65deg);
+          transform-origin: bottom center;
+          overflow: hidden;
+        }
+
+        .rug-base {
+          position: absolute;
+          inset: 0;
+          background: ${isDark
+            ? 'linear-gradient(180deg, rgba(60, 55, 70, 0.4) 0%, rgba(50, 45, 60, 0.3) 50%, rgba(45, 40, 55, 0.25) 100%)'
+            : 'linear-gradient(180deg, rgba(210, 200, 185, 0.5) 0%, rgba(195, 185, 170, 0.4) 50%, rgba(180, 170, 155, 0.35) 100%)'};
+          border-radius: 8px;
+        }
+
+        .rug-pattern {
+          position: absolute;
+          inset: 8%;
+          border: 2px solid ${isDark ? 'rgba(100, 90, 110, 0.3)' : 'rgba(160, 145, 125, 0.4)'};
+          border-radius: 4px;
+        }
+
+        .rug-pattern-inner {
+          position: absolute;
+          inset: 15%;
+          border: 1px solid ${isDark ? 'rgba(100, 90, 110, 0.2)' : 'rgba(160, 145, 125, 0.3)'};
+          border-radius: 3px;
+        }
+
+        .rug-center {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 30%;
+          height: 40%;
+          background: ${isDark
+            ? 'radial-gradient(ellipse, rgba(80, 75, 95, 0.25) 0%, transparent 70%)'
+            : 'radial-gradient(ellipse, rgba(175, 165, 150, 0.3) 0%, transparent 70%)'};
+          border-radius: 50%;
+        }
+
+        /* Subtle texture lines */
+        .rug-texture {
+          position: absolute;
+          inset: 0;
+          background: repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            transparent 8px,
+            ${isDark ? 'rgba(80, 75, 95, 0.08)' : 'rgba(150, 140, 125, 0.1)'} 8px,
+            ${isDark ? 'rgba(80, 75, 95, 0.08)' : 'rgba(150, 140, 125, 0.1)'} 9px
+          );
+          border-radius: 8px;
+        }
+
+        /* ============ VERA ORB ============ */
+
+        .vera-presence {
+          position: absolute;
+          top: 42%;
+          left: 0;
+          right: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          z-index: 50;
+          gap: 20px;
+          opacity: ${isLoaded ? 1 : 0};
+          transition: opacity 1.2s ease 0.8s;
+        }
+
+        .orb-container { position: relative; cursor: pointer; }
+
+        .orb {
+          width: 100px; height: 100px;
+          border-radius: 50%;
+          background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.3) 0%, rgba(160, 140, 200, 0.5) 30%, rgba(120, 100, 180, 0.4) 60%, rgba(90, 70, 160, 0.3) 100%);
+          box-shadow: 0 0 ${50 + breathValue * 30}px rgba(140, 120, 200, ${0.35 + breathValue * 0.2}), 0 0 ${100 + breathValue * 50}px rgba(140, 120, 200, ${0.15 + breathValue * 0.1}), inset 0 0 50px rgba(255, 255, 255, 0.15);
+          transform: scale(${1 + breathValue * 0.06});
+          transition: box-shadow 0.3s ease;
+        }
+
+        .orb:hover {
+          box-shadow: 0 0 80px rgba(140, 120, 200, 0.5), 0 0 150px rgba(140, 120, 200, 0.25), inset 0 0 50px rgba(255, 255, 255, 0.2);
         }
 
         .orb-ring {
           position: absolute;
-          top: -16px;
-          left: -16px;
-          right: -16px;
-          bottom: -16px;
+          inset: -18px;
           border-radius: 50%;
-          border: 2px solid rgba(139, 119, 183, 0.35);
-          box-shadow: 0 0 24px rgba(139, 119, 183, 0.25);
-          animation: pulse-ring 5s ease-in-out infinite;
+          border: 1px solid rgba(140, 120, 200, ${0.2 + breathValue * 0.15});
+          transform: scale(${0.95 + breathValue * 0.1});
         }
 
-        @keyframes pulse-ring {
-          0%, 100% { transform: scale(0.95); opacity: 0.5; }
-          50% { transform: scale(1.05); opacity: 0.2; }
+        .orb-ring-outer { inset: -35px; border-color: rgba(140, 120, 200, ${0.1 + breathValue * 0.08}); }
+
+        .vera-label {
+          font-size: 0.6rem;
+          letter-spacing: 0.5em;
+          text-transform: uppercase;
+          color: ${isDark ? 'rgba(255, 255, 255, 0.35)' : 'rgba(0, 0, 0, 0.3)'};
+          font-weight: 300;
         }
 
-        /* Greeting */
+        /* ============ GREETING ============ */
+
+        .greeting-area {
+          position: absolute;
+          top: 18%;
+          left: 0;
+          right: 0;
+          text-align: center;
+          z-index: 40;
+          padding: 0 20px;
+          opacity: ${isLoaded ? 1 : 0};
+          transition: opacity 1s ease 0.5s;
+        }
+
         .greeting {
           font-family: 'Cormorant Garamond', Georgia, serif;
-          font-size: clamp(2rem, 6vw, 3.5rem);
+          font-size: clamp(1.6rem, 5vw, 2.8rem);
           font-weight: 300;
-          color: ${isDark ? '#ffffff' : '#2d2d2d'};
-          margin-bottom: 0;
-          text-align: center;
-          letter-spacing: 0.02em;
-          text-shadow: ${isDark ? '0 2px 18px rgba(0,0,0,0.35)' : '0 2px 14px rgba(0,0,0,0.12)'};
+          color: ${isDark ? '#ffffff' : '#2a2a2a'};
+          margin: 0;
+          text-shadow: 0 4px 20px ${isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'};
         }
 
-        .subtitle {
-          font-size: 1.1rem;
-          color: ${isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(45, 45, 45, 0.6)'};
-          margin-bottom: 0;
-          text-align: center;
-          letter-spacing: 0.08em;
+        .time-essence {
+          font-size: clamp(0.6rem, 2vw, 0.8rem);
+          letter-spacing: 0.25em;
+          text-transform: uppercase;
+          color: ${isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.35)'};
+          margin-top: 10px;
+          font-weight: 300;
         }
 
-        /* Quick Start Buttons */
-        .quick-start {
-          display: flex;
-          gap: 12px;
-          flex-wrap: wrap;
-          justify-content: center;
-          margin-bottom: 0;
+        /* ============ ROOM PORTALS - TOP LEFT ============ */
+
+        .portals {
+          position: absolute;
+          top: 15%;
+          left: 3%;
+          z-index: 60;
+          opacity: ${isLoaded ? 1 : 0};
+          transition: opacity 0.8s ease 1s;
         }
 
-        .quick-btn {
-          padding: 18px 36px;
-          border-radius: 50px;
-          border: 1px solid ${isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(45, 45, 45, 0.2)'};
-          background: ${isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)'};
-          color: ${isDark ? '#ffffff' : '#2d2d2d'};
-          font-size: 1.02rem;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          backdrop-filter: blur(10px);
-        }
-
-        .quick-btn:hover {
-          background: ${isDark ? 'rgba(139, 119, 183, 0.2)' : 'rgba(201, 169, 98, 0.15)'};
-          border-color: ${isDark ? 'rgba(139, 119, 183, 0.5)' : 'rgba(201, 169, 98, 0.5)'};
-          transform: translateY(-2px);
-        }
-
-        .quick-btn-primary {
-          background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
-          border: none;
-          color: #ffffff;
-          box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
-        }
-
-        .quick-btn-primary:hover {
-          box-shadow: 0 6px 30px rgba(139, 92, 246, 0.4);
-          transform: translateY(-2px);
-        }
-
-        /* Rooms Grid */
-        .rooms-grid {
+        .portals-scroll {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-          gap: 20px;
-          max-width: 840px;
-          width: 100%;
-          margin-bottom: 0;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
         }
 
-        .room-card {
+        .portal {
+          width: 110px; 
+          height: 90px;
           background: ${isDark
-            ? 'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(139,119,183,0.06) 100%)'
-            : 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(201,169,98,0.10) 100%)'};
-          border: 1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(45, 45, 45, 0.1)'};
-          border-radius: 20px;
-          padding: 34px 26px;
-          min-height: 160px;
-          text-align: center;
+            ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)'
+            : 'linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%)'};
+          backdrop-filter: blur(20px);
+          border: 1px solid ${isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)'};
+          border-radius: 14px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
           cursor: pointer;
-          transition: all 0.3s ease;
-          backdrop-filter: blur(10px);
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           overflow: hidden;
         }
 
-        .room-card::before {
+        .portal::before {
           content: '';
           position: absolute;
           inset: 0;
+          background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
           pointer-events: none;
-          background: radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.18) 0%, transparent 60%);
-          opacity: 0.5;
         }
 
-        .room-card:hover,
-        .room-card.highlighted {
-          transform: translateY(-6px);
-          border-color: ${isDark ? 'rgba(139, 119, 183, 0.5)' : 'rgba(201, 169, 98, 0.5)'};
-          box-shadow:
-            0 14px 60px ${isDark ? 'rgba(139, 119, 183, 0.22)' : 'rgba(0, 0, 0, 0.12)'},
-            0 0 0 1px ${isDark ? 'rgba(139, 119, 183, 0.25)' : 'rgba(201, 169, 98, 0.25)'},
-            0 0 28px ${isDark ? 'rgba(139, 119, 183, 0.22)' : 'rgba(201, 169, 98, 0.16)'};
+        .portal:hover, .portal.active {
+          transform: translateY(-4px) scale(1.02);
+          border-color: ${isDark ? 'rgba(140, 120, 200, 0.4)' : 'rgba(180, 160, 120, 0.4)'};
+          box-shadow: 0 15px 40px ${isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.12)'}, 0 0 30px ${isDark ? 'rgba(140, 120, 200, 0.15)' : 'rgba(180, 160, 120, 0.15)'};
         }
 
-        /* Room Icons - Pure CSS */
-        .room-icon {
-          width: 60px;
-          height: 60px;
-          margin: 0 auto 14px;
-          position: relative;
-        }
-
-        /* Therapy - Couch */
-        .icon-couch-back {
+        .portal-glow {
           position: absolute;
-          bottom: 12px;
-          left: 4px;
-          right: 4px;
-          height: 20px;
-          background: ${isDark ? 'rgba(180, 160, 200, 0.8)' : 'rgba(180, 160, 140, 0.9)'};
-          border-radius: 6px 6px 0 0;
+          inset: 0;
+          background: radial-gradient(circle at center, ${isDark ? 'rgba(140, 120, 200, 0.15)' : 'rgba(201, 169, 98, 0.1)'} 0%, transparent 70%);
+          opacity: 0;
+          transition: opacity 0.5s ease;
         }
 
-        .icon-couch-seat {
+        .portal:hover .portal-glow { opacity: 1; }
+
+        .portal-icon { width: 28px; height: 28px; position: relative; }
+
+        .icon-line { position: absolute; background: ${isDark ? 'rgba(160, 140, 200, 0.7)' : 'rgba(120, 100, 160, 0.6)'}; border-radius: 2px; }
+        .line-h { width: 20px; height: 3px; bottom: 8px; left: 4px; }
+        .line-v { width: 3px; height: 12px; bottom: 8px; left: 12px; }
+
+        .icon-circle { width: 18px; height: 18px; border: 2px solid ${isDark ? 'rgba(160, 180, 140, 0.7)' : 'rgba(120, 140, 100, 0.6)'}; border-radius: 50%; position: absolute; top: 5px; left: 5px; }
+        .icon-dot { width: 5px; height: 5px; background: ${isDark ? 'rgba(160, 180, 140, 0.7)' : 'rgba(120, 140, 100, 0.6)'}; border-radius: 50%; position: absolute; top: 11px; left: 11px; }
+
+        .icon-rect { position: absolute; background: ${isDark ? 'rgba(180, 160, 140, 0.7)' : 'rgba(140, 120, 100, 0.6)'}; border-radius: 1px; }
+        .rect-1 { width: 5px; height: 16px; left: 5px; bottom: 6px; }
+        .rect-2 { width: 5px; height: 20px; left: 11px; bottom: 6px; }
+        .rect-3 { width: 5px; height: 14px; left: 17px; bottom: 6px; }
+
+        .icon-moon { width: 16px; height: 16px; border: 2px solid ${isDark ? 'rgba(180, 190, 220, 0.7)' : 'rgba(140, 150, 180, 0.6)'}; border-radius: 50%; position: absolute; top: 6px; left: 6px; clip-path: polygon(0 0, 70% 0, 70% 100%, 0 100%); }
+
+        .icon-frame { width: 18px; height: 12px; border: 2px solid ${isDark ? 'rgba(200, 180, 140, 0.7)' : 'rgba(160, 140, 100, 0.6)'}; position: absolute; top: 5px; left: 5px; }
+        .icon-stand { width: 2px; height: 10px; background: ${isDark ? 'rgba(200, 180, 140, 0.7)' : 'rgba(160, 140, 100, 0.6)'}; position: absolute; bottom: 4px; left: 13px; }
+
+        .icon-page { width: 16px; height: 20px; border: 2px solid ${isDark ? 'rgba(180, 160, 140, 0.7)' : 'rgba(140, 120, 100, 0.6)'}; border-radius: 2px; position: absolute; top: 4px; left: 6px; }
+        .icon-lines { position: absolute; left: 10px; right: 10px; height: 1px; background: ${isDark ? 'rgba(180, 160, 140, 0.5)' : 'rgba(140, 120, 100, 0.4)'}; }
+        .lines-1 { top: 10px; }
+        .lines-2 { top: 14px; }
+        .lines-3 { top: 18px; }
+
+        .portal-name { font-size: 0.7rem; font-weight: 500; color: ${isDark ? '#ffffff' : '#2a2a2a'}; }
+        .portal-essence { font-size: 0.5rem; color: ${isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.35)'}; letter-spacing: 0.1em; text-transform: uppercase; }
+
+        /* ============ BOTTOM BAR ============ */
+
+        .bottom-bar {
           position: absolute;
-          bottom: 6px;
-          left: 2px;
-          right: 2px;
-          height: 10px;
-          background: ${isDark ? 'rgba(160, 140, 180, 0.9)' : 'rgba(160, 145, 130, 1)'};
-          border-radius: 4px;
-        }
-
-        .icon-couch-arm {
-          position: absolute;
-          bottom: 6px;
-          width: 6px;
-          height: 16px;
-          background: ${isDark ? 'rgba(150, 130, 170, 0.9)' : 'rgba(150, 135, 120, 1)'};
-          border-radius: 3px;
-        }
-
-        .icon-couch-arm-left { left: 0; }
-        .icon-couch-arm-right { right: 0; }
-
-        /* Zen - Candle */
-        .icon-candle-glow {
-          position: absolute;
-          bottom: 18px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 40px;
-          height: 40px;
-          background: radial-gradient(circle, rgba(255, 180, 80, 0.3) 0%, transparent 70%);
-        }
-
-        .icon-candle-body {
-          position: absolute;
-          bottom: 4px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 14px;
-          height: 26px;
-          background: linear-gradient(180deg, #faf8f5 0%, #e8e0d4 100%);
-          border-radius: 2px;
-        }
-
-        .icon-candle-flame {
-          position: absolute;
-          bottom: 28px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 8px;
-          height: 14px;
-          background: radial-gradient(ellipse at bottom, 
-            rgba(255, 200, 100, 0.95) 0%, 
-            rgba(255, 150, 50, 0.6) 50%, 
-            transparent 100%);
-          border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-          animation: iconFlicker 0.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes iconFlicker {
-          0% { transform: translateX(-50%) scaleY(1) rotate(-2deg); }
-          100% { transform: translateX(-50%) scaleY(1.1) rotate(2deg); }
-        }
-
-        /* Library - Books */
-        .icon-book {
-          position: absolute;
-          bottom: 8px;
-          border-radius: 2px 2px 0 0;
-        }
-
-        .icon-book-1 { left: 8px; width: 8px; height: 26px; background: #8b4513; }
-        .icon-book-2 { left: 18px; width: 10px; height: 30px; background: #2f4f4f; }
-        .icon-book-3 { left: 30px; width: 8px; height: 24px; background: #8b0000; }
-
-        /* Bedroom - Moon */
-        .icon-moon {
-          position: absolute;
-          top: 6px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 26px;
-          height: 26px;
-          border-radius: 50%;
-          background: radial-gradient(circle at 30% 30%, #f0f0ff 0%, #c0c0d8 100%);
-          box-shadow: 0 0 12px rgba(200, 210, 255, 0.5);
-        }
-
-        .icon-star {
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          background: rgba(255, 255, 255, 0.8);
-          border-radius: 50%;
-        }
-
-        .icon-star-1 { top: 4px; left: 6px; width: 3px; height: 3px; }
-        .icon-star-2 { top: 12px; right: 4px; }
-        .icon-star-3 { bottom: 10px; left: 10px; width: 3px; height: 3px; }
-
-        /* Studio - Easel */
-        .icon-easel-leg {
-          position: absolute;
-          bottom: 4px;
-          width: 4px;
-          height: 28px;
-          background: ${isDark ? 'rgba(180, 160, 140, 0.8)' : '#8b7355'};
-        }
-
-        .icon-easel-leg-left { left: 10px; transform: rotate(-8deg); }
-        .icon-easel-leg-right { right: 10px; transform: rotate(8deg); }
-
-        .icon-easel-canvas {
-          position: absolute;
-          top: 4px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 26px;
-          height: 20px;
-          background: ${isDark ? 'rgba(250, 248, 245, 0.9)' : '#faf8f5'};
-          border: 2px solid ${isDark ? 'rgba(180, 160, 140, 0.8)' : '#c4a484'};
-        }
-
-        /* Journal - Notebook */
-        .icon-notebook {
-          position: absolute;
-          top: 6px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 26px;
-          height: 30px;
-          background: ${isDark ? 'rgba(100, 80, 60, 0.9)' : '#6b4423'};
-          border-radius: 2px 4px 4px 2px;
-        }
-
-        .icon-notebook-binding {
-          position: absolute;
-          left: 0;
-          top: 0;
-          bottom: 0;
-          width: 4px;
-          background: ${isDark ? 'rgba(80, 60, 40, 1)' : '#4a3520'};
-          border-radius: 2px 0 0 2px;
-        }
-
-        .icon-notebook-line {
-          position: absolute;
-          left: 7px;
-          right: 3px;
-          height: 2px;
-          background: rgba(255, 255, 255, 0.3);
-        }
-
-        .icon-notebook-line-1 { top: 10px; }
-        .icon-notebook-line-2 { top: 16px; }
-        .icon-notebook-line-3 { top: 22px; }
-
-        .room-name {
-          font-size: 0.95rem;
-          font-weight: 500;
-          color: ${isDark ? '#ffffff' : '#2d2d2d'};
-          margin-bottom: 4px;
-        }
-
-        .room-description {
-          font-size: 0.75rem;
-          color: ${isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(45, 45, 45, 0.5)'};
-        }
-
-        /* Trust Line */
-        .trust-line {
-          font-size: 0.8rem;
-          color: ${isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(45, 45, 45, 0.4)'};
+          bottom: 0; left: 0; right: 0;
+          z-index: 70;
+          padding: 20px 24px;
+          padding-bottom: max(20px, env(safe-area-inset-bottom));
+          background: linear-gradient(to top, ${isDark ? 'rgba(10, 10, 18, 0.95)' : 'rgba(248, 246, 242, 0.95)'} 0%, transparent 100%);
+          backdrop-filter: blur(20px);
           display: flex;
-          align-items: center;
-          gap: 8px;
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: 18px;
           justify-content: center;
-          padding: 0 18px;
-          z-index: 15;
+          gap: 12px;
+          opacity: ${isLoaded ? 1 : 0};
+          transition: opacity 0.8s ease 1.2s;
         }
 
-        .lock-icon {
-          width: 14px;
-          height: 14px;
-          position: relative;
+        .action-btn {
+          padding: 16px 32px;
+          border-radius: 50px;
+          font-size: 0.85rem;
+          font-weight: 500;
+          letter-spacing: 0.08em;
+          cursor: pointer;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          border: none;
+          font-family: inherit;
         }
 
-        .lock-shackle {
-          position: absolute;
-          top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 8px;
-          height: 6px;
-          border: 2px solid ${isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(45, 45, 45, 0.4)'};
-          border-bottom: none;
-          border-radius: 4px 4px 0 0;
+        .action-primary {
+          background: linear-gradient(135deg, ${isDark ? '#8B7CC6' : '#9B8BC6'} 0%, ${isDark ? '#6B5CA6' : '#7B6BA6'} 100%);
+          color: #ffffff;
+          box-shadow: 0 8px 30px ${isDark ? 'rgba(139, 124, 198, 0.4)' : 'rgba(139, 124, 198, 0.3)'};
         }
 
-        .lock-body {
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 10px;
-          height: 8px;
-          background: ${isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(45, 45, 45, 0.4)'};
-          border-radius: 2px;
+        .action-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(139, 124, 198, 0.5); }
+
+        .action-secondary {
+          background: ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'};
+          color: ${isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.7)'};
+          border: 1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)'};
         }
+
+        .action-secondary:hover { background: ${isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)'}; transform: translateY(-2px); }
+
+        /* ============ RESPONSIVE ============ */
 
         @media (max-width: 768px) {
-          .content-wrapper {
-            padding: 20px 16px 76px;
-          }
-
-          .orb-section {
-            min-height: 26vh;
-            padding-top: 4vh;
-          }
-
-          .content-section {
-            min-height: auto;
-            gap: 22px;
-          }
-
-          .rooms-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-          }
-
-          .room-card {
-            padding: 30px 20px;
-            min-height: 160px;
-          }
-
-          .quick-start {
-            flex-direction: column;
-            align-items: stretch;
-            width: 100%;
-            max-width: 300px;
-          }
-
-          .room-bg { opacity: ${isDark ? 0.35 : 0.45}; }
-
-          .sofa-container,
-          .coffee-table,
-          .side-table,
-          .floor-plant {
-            display: none;
-          }
+          .greeting-area { top: 14%; }
+          .greeting { font-size: clamp(1.4rem, 4.5vw, 1.8rem); }
+          .time-essence { font-size: 0.6rem; letter-spacing: 0.2em; }
+          .vera-presence { top: 32%; }
+          .orb { width: 80px; height: 80px; }
+          .orb-ring { inset: -12px; }
+          .orb-ring-outer { inset: -25px; }
+          .portals { top: 18%; left: 2%; }
+          .portals-scroll { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+          .portal { width: 85px; height: 70px; }
+          .portal-icon { width: 22px; height: 22px; }
+          .portal-name { font-size: 0.6rem; }
+          .portal-essence { font-size: 0.45rem; }
+          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group, .ceiling-light { opacity: 0.4; transform: scale(0.85); }
         }
 
         @media (max-width: 480px) {
-          .content-wrapper {
-            padding: 18px 14px 72px;
-          }
+          .greeting-area { top: 12%; padding: 0 15%; }
+          .greeting { font-size: clamp(1.2rem, 4.5vw, 1.5rem); }
+          .time-essence { font-size: 0.5rem; margin-top: 6px; letter-spacing: 0.15em; }
+          .vera-presence { top: 26%; gap: 14px; }
+          .orb { width: 60px; height: 60px; }
+          .orb-ring { inset: -8px; }
+          .orb-ring-outer { inset: -16px; }
+          .vera-label { font-size: 0.45rem; letter-spacing: 0.4em; }
+          .portals { top: 16%; left: 2%; }
+          .portals-scroll { grid-template-columns: 1fr; gap: 5px; }
+          .portal { width: 75px; height: 55px; border-radius: 10px; }
+          .portal-icon { width: 18px; height: 18px; }
+          .portal-name { font-size: 0.55rem; }
+          .portal-essence { display: none; }
+          .sofa-group, .coffee-table, .floor-lamp-group, .plant-group { display: none; }
+          .ceiling-light { opacity: 0.3; }
+          .bottom-bar { flex-direction: column; align-items: center; }
+          .action-btn { width: 100%; max-width: 280px; padding: 14px 24px; font-size: 0.8rem; }
+        }
 
-          .orb-section {
-            min-height: 28vh;
-            padding-top: 5vh;
-          }
-
-          .rooms-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-          }
-
-          .room-card {
-            padding: 28px 18px;
-            min-height: 160px;
-          }
-
-          .quick-start {
-            max-width: 100%;
-          }
+        @media (prefers-reduced-motion: reduce) {
+          .orb, .orb-ring, .leaf, .flame, .dust, .beam { animation: none; }
         }
       `}</style>
 
-      <div className="sanctuary-container">
-        {/* Light Layers */}
-        <div className="light-layer sunlight intro-bg" />
-        <div className="light-layer ambient-glow intro-bg" />
+      <div className="room-environment"><div className="vignette" /></div>
 
-        <div className="vignette intro-bg" />
+      <div className="architecture">
+        <div className="wall" />
+        <div className="floor"><div className="floor-reflection" /></div>
 
-        {/* Light Beams */}
-        <div className="light-beams intro-bg">
+        {/* Window with trees */}
+        <div className="window-area">
+          <div className="window-frame">
+            <div className="window-trees">
+              <div className="tree-line" />
+              <div className="tree tree-1"><div className="tree-trunk" /><div className="tree-canopy" /></div>
+              <div className="tree tree-2"><div className="tree-trunk" /><div className="tree-canopy" /></div>
+              <div className="tree tree-3"><div className="tree-trunk" /><div className="tree-canopy" /></div>
+              <div className="tree tree-4"><div className="tree-trunk" /><div className="tree-canopy" /></div>
+            </div>
+            <div className="celestial-body" />
+            <div className="window-mullion-v" />
+            <div className="window-mullion-h" />
+          </div>
+          <div className="window-sill" />
+        </div>
+
+        <div className="light-beams">
           <div className="beam beam-1" />
           <div className="beam beam-2" />
           <div className="beam beam-3" />
           <div className="beam beam-4" />
-          <div className="beam beam-5" />
         </div>
 
-        {/* Dust Particles */}
-        <div className="dust-container intro-bg">
-          {dustParticles.map((p) => (
-            <div
-              key={`dust-${p.id}`}
-              className="dust"
-              style={{
-                left: `${p.x}%`,
-                width: `${p.size}px`,
-                height: `${p.size}px`,
-                animationDuration: `${p.duration}s`,
-                animationDelay: `${p.delay}s`,
-              }}
-            />
+        <div className="dust-field">
+          {dustPositions.map((pos, i) => (
+            <div key={i} className="dust" style={{ left: `${pos}%`, animationDelay: `${i * 1.2}s`, animationDuration: `${18 + (i % 4) * 2}s` }} />
           ))}
         </div>
 
-        {/* Floating Particles */}
-        {particles.map((p) => (
-          <div
-            key={`particle-${p.id}`}
-            className="particle"
-            style={{
-              left: `${p.x}%`,
-              top: `${p.y}%`,
-              width: `${p.size}px`,
-              height: `${p.size}px`,
-              animationDuration: `${p.duration}s`,
-              animationDelay: `${p.delay}s`,
-            }}
-          />
-        ))}
+        {/* Zen Rug */}
+        <div className="rug">
+          <div className="rug-base" />
+          <div className="rug-pattern" />
+          <div className="rug-pattern-inner" />
+          <div className="rug-center" />
+          <div className="rug-texture" />
+        </div>
 
-        {/* Room Background */}
-        <div className="room-bg intro-bg">
-          {/* Wall */}
-          <div className="wall-back" />
+        {/* Ceiling Pendant Light */}
+        <div className="ceiling-light">
+          <div className="ceiling-canopy" />
+          <div className="ceiling-cord" />
+          <div className="pendant-shade" />
+          <div className="pendant-glow" />
+        </div>
 
-          {/* Window */}
-          <div className="window-container">
-            <div className="window">
-              <div className="window-frame-v" />
-              <div className="window-frame-h" />
-              <div className="moon-window" />
-            </div>
-            <div className="window-sill" />
-          </div>
-
-          {/* Floor */}
-          <div className="floor">
-            <div className="floor-texture" />
-          </div>
-
-          {/* Rug */}
-          <div className="rug" />
-
-          {/* Sofa */}
-          <div className="sofa-container">
-            <div className="sofa">
-              <div className="sofa-back" />
-              <div className="sofa-cushion cushion-1" />
-              <div className="sofa-cushion cushion-2" />
-              <div className="sofa-cushion cushion-3" />
-              <div className="sofa-seat" />
-              <div className="sofa-arm arm-left" />
-              <div className="sofa-arm arm-right" />
-              <div className="sofa-legs leg-1" />
-              <div className="sofa-legs leg-2" />
-              <div className="sofa-legs leg-3" />
-              <div className="sofa-legs leg-4" />
-              <div className="throw-pillow pillow-sage" />
-              <div className="throw-pillow pillow-terracotta" />
-            </div>
-          </div>
-
-          {/* Coffee Table */}
-          <div className="coffee-table">
-            <div className="table-items">
-              <div className="vase">
-                <div className="vase-flowers">
-                  <div className="flower-stem flower-stem-1" />
-                  <div className="flower-stem flower-stem-2" />
-                  <div className="flower-stem flower-stem-3" />
-                </div>
-              </div>
-              <div className="book-stack">
-                <div className="book book-1" />
-                <div className="book book-2" />
-                <div className="book book-3" />
-              </div>
-              <div className="candle">
-                <div className="candle-glow" />
-                <div className="candle-flame" />
-              </div>
-            </div>
-            <div className="table-top" />
-            <div className="table-legs">
-              <div className="table-leg" />
-              <div className="table-leg" />
-            </div>
-          </div>
-
-          {/* Side Table & Lamp */}
-          <div className="side-table">
-            <div className="lamp">
-              <div className="lamp-shade" />
-              <div className="lamp-base" />
-              <div className="lamp-foot" />
-            </div>
-            <div className="side-table-top" />
-            <div className="side-table-leg" />
-          </div>
-
-          {/* Floor Plant */}
-          <div className="floor-plant">
-            <div className="plant-leaves-container">
-              <div className="plant-leaf leaf-1" />
-              <div className="plant-leaf leaf-2" />
-              <div className="plant-leaf leaf-3" />
-              <div className="plant-leaf leaf-4" />
-              <div className="plant-leaf leaf-5" />
-            </div>
-            <div className="large-pot" />
+        <div className="sofa-group">
+          <div className="sofa">
+            <div className="sofa-back" />
+            <div className="sofa-cushion cushion-1" />
+            <div className="sofa-cushion cushion-2" />
+            <div className="sofa-cushion cushion-3" />
+            <div className="sofa-seat" />
+            <div className="sofa-arm arm-left" />
+            <div className="sofa-arm arm-right" />
+            <div className="sofa-leg leg-1" />
+            <div className="sofa-leg leg-2" />
+            <div className="sofa-leg leg-3" />
+            <div className="sofa-leg leg-4" />
+            <div className="throw-pillow pillow-accent-1" />
+            <div className="throw-pillow pillow-accent-2" />
           </div>
         </div>
 
-        {/* Time Indicator */}
-        <div className="time-indicator">
-          <div className={`time-icon time-icon-${timeOfDay}`} />
-          <span>
-            {timeOfDay === 'morning' && 'Morning'}
-            {timeOfDay === 'afternoon' && 'Afternoon'}
-            {timeOfDay === 'evening' && 'Evening'}
-            {timeOfDay === 'night' && 'Night'}
-          </span>
-        </div>
-
-        {/* Content */}
-        <div className="content-wrapper">
-          <div className="orb-section">
-            {/* VERA Orb */}
-            <div className="orb-container intro-orb">
-              <div className="orb-ring" />
-              <div className="vera-orb" onClick={handleTalkToVera} />
+        <div className="coffee-table">
+          <div className="table-objects">
+            <div className="vase">
+              <div className="stems">
+                <div className="stem stem-1" />
+                <div className="stem stem-2" />
+                <div className="stem stem-3" />
+              </div>
+            </div>
+            <div className="books">
+              <div className="book book-1" />
+              <div className="book book-2" />
+              <div className="book book-3" />
+            </div>
+            <div className="candle">
+              <div className="flame-glow" />
+              <div className="flame" />
             </div>
           </div>
-
-          <div className="content-section">
-            {/* Greeting */}
-            <h1 className="greeting intro-greeting">
-              {getGreeting()}{userName ? `, ${userName}` : ''}
-            </h1>
-            <div className="subtitle intro-greeting">Where would you like to go?</div>
-
-            {/* Quick Actions */}
-            <div className="quick-start intro-quick">
-              <button className="quick-btn quick-btn-primary" onClick={handleTalkToVera}>
-                Talk to VERA
-              </button>
-              <button className="quick-btn" onClick={() => onRoomSelect('zen')}>
-                I need to breathe
-              </button>
-            </div>
-
-            {/* Rooms Grid */}
-            <div className="rooms-grid intro-grid">
-              {ROOMS.map((room) => (
-                <div
-                  key={room.id}
-                  className={`room-card ${hoveredRoom === room.id ? 'highlighted' : ''}`}
-                  onClick={() => onRoomSelect(room.id)}
-                  onMouseEnter={() => setHoveredRoom(room.id)}
-                  onMouseLeave={() => setHoveredRoom(null)}
-                >
-                  <div className="room-icon">
-                    {room.id === 'therapy' && (
-                      <>
-                        <div className="icon-couch-back" />
-                        <div className="icon-couch-seat" />
-                        <div className="icon-couch-arm icon-couch-arm-left" />
-                        <div className="icon-couch-arm icon-couch-arm-right" />
-                      </>
-                    )}
-                    {room.id === 'zen' && (
-                      <>
-                        <div className="icon-candle-glow" />
-                        <div className="icon-candle-body" />
-                        <div className="icon-candle-flame" />
-                      </>
-                    )}
-                    {room.id === 'library' && (
-                      <>
-                        <div className="icon-book icon-book-1" />
-                        <div className="icon-book icon-book-2" />
-                        <div className="icon-book icon-book-3" />
-                      </>
-                    )}
-                    {room.id === 'bedroom' && (
-                      <>
-                        <div className="icon-moon" />
-                        <div className="icon-star icon-star-1" />
-                        <div className="icon-star icon-star-2" />
-                        <div className="icon-star icon-star-3" />
-                      </>
-                    )}
-                    {room.id === 'studio' && (
-                      <>
-                        <div className="icon-easel-leg icon-easel-leg-left" />
-                        <div className="icon-easel-leg icon-easel-leg-right" />
-                        <div className="icon-easel-canvas" />
-                      </>
-                    )}
-                    {room.id === 'journal' && (
-                      <div className="icon-notebook">
-                        <div className="icon-notebook-binding" />
-                        <div className="icon-notebook-line icon-notebook-line-1" />
-                        <div className="icon-notebook-line icon-notebook-line-2" />
-                        <div className="icon-notebook-line icon-notebook-line-3" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="room-name">{room.name}</div>
-                  <div className="room-description">{room.description}</div>
-                </div>
-              ))}
-            </div>
+          <div className="table-surface" />
+          <div className="table-legs">
+            <div className="table-leg" />
+            <div className="table-leg" />
           </div>
         </div>
 
-        {/* Trust Line */}
-        <div className="trust-line">
-          <div className="lock-icon">
-            <div className="lock-shackle" />
-            <div className="lock-body" />
+        {/* Tall Floor Lamp */}
+        <div className="floor-lamp-group">
+          <div className="floor-lamp">
+            <div className="floor-lamp-glow" />
+            <div className="floor-lamp-shade" />
+            <div className="floor-lamp-neck-top" />
+            <div className="floor-lamp-pole" />
+            <div className="floor-lamp-base" />
           </div>
-          Your sanctuary is private and secure
+        </div>
+
+        <div className="plant-group">
+          <div className="foliage">
+            <div className="leaf leaf-1" />
+            <div className="leaf leaf-2" />
+            <div className="leaf leaf-3" />
+            <div className="leaf leaf-4" />
+            <div className="leaf leaf-5" />
+            <div className="leaf leaf-6" />
+            <div className="flower flower-1">
+              <div className="flower-bloom">
+                <div className="flower-center" />
+              </div>
+              <div className="flower-stem" />
+            </div>
+            <div className="flower flower-2">
+              <div className="flower-bloom">
+                <div className="flower-center" />
+              </div>
+              <div className="flower-stem" />
+            </div>
+          </div>
+          <div className="planter">
+            <div className="planter-rim" />
+          </div>
         </div>
       </div>
-    </>
+
+      <div className="greeting-area">
+        <h1 className="greeting">{getGreeting()}</h1>
+        <p className="time-essence">Your sanctuary awaits</p>
+      </div>
+
+      <div className="vera-presence">
+        <div className="orb-container" onClick={handleTalkToVera}>
+          <div className="orb-ring" />
+          <div className="orb-ring orb-ring-outer" />
+          <div className="orb" />
+        </div>
+        <span className="vera-label">VERA</span>
+      </div>
+
+      <div className="portals">
+        <div className="portals-scroll">
+          {ROOMS.map((room) => (
+            <div key={room.id} className={`portal ${activePortal === room.id ? 'active' : ''}`} onClick={() => handlePortalEnter(room.id)}>
+              <div className="portal-glow" />
+              <div className={`portal-icon icon-${room.id}`}>
+                {room.id === 'therapy' && <><div className="icon-line line-h" /><div className="icon-line line-v" /></>}
+                {room.id === 'zen' && <><div className="icon-circle" /><div className="icon-dot" /></>}
+                {room.id === 'library' && <><div className="icon-rect rect-1" /><div className="icon-rect rect-2" /><div className="icon-rect rect-3" /></>}
+                {room.id === 'bedroom' && <div className="icon-moon" />}
+                {room.id === 'studio' && <><div className="icon-frame" /><div className="icon-stand" /></>}
+                {room.id === 'journal' && <><div className="icon-page" /><div className="icon-lines lines-1" /><div className="icon-lines lines-2" /><div className="icon-lines lines-3" /></>}
+              </div>
+              <span className="portal-name">{room.name}</span>
+              <span className="portal-essence">{room.essence}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bottom-bar">
+        <button className="action-btn action-primary" onClick={handleTalkToVera}>Talk to VERA</button>
+        <button className="action-btn action-secondary" onClick={() => handlePortalEnter('zen')}>Begin Breathing</button>
+      </div>
+    </div>
   );
 }
