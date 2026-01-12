@@ -528,8 +528,9 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
 
         .plant-group { 
           position: absolute; 
-          bottom: 21%; 
-          left: 72%; 
+          bottom: 24%; 
+          right: 12%; 
+          left: auto;
         }
 
         .planter {
@@ -647,8 +648,8 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
 
         .floor-lamp-group { 
           position: absolute; 
-          bottom: 18%; 
-          left: 15%; 
+          bottom: 24%; 
+          left: 8%; 
         }
 
         .floor-lamp {
@@ -764,13 +765,13 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
 
         .rug {
           position: absolute;
-          bottom: 6%;
-          left: 22%;
+          bottom: 22%;
+          left: 50%;
+          transform: translateX(-50%) perspective(800px) rotateX(65deg);
           width: 42%;
           max-width: 450px;
           height: 22%;
           border-radius: 8px;
-          transform: perspective(800px) rotateX(65deg);
           transform-origin: bottom center;
           overflow: hidden;
         }
@@ -878,7 +879,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
 
         .greeting-area {
           position: absolute;
-          top: 25%;
+          top: 60%;
           left: 0;
           right: 0;
           text-align: center;
@@ -1049,7 +1050,7 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
         /* ============ RESPONSIVE ============ */
 
         @media (max-width: 768px) {
-          .greeting-area { top: 26%; }
+          .greeting-area { top: 60%; }
           .greeting { font-size: clamp(1.4rem, 4.5vw, 1.8rem); color: ${isDark ? 'rgba(255, 255, 255, 0.65)' : 'rgba(42, 42, 42, 0.55)'}; }
           .time-essence { font-size: 0.6rem; letter-spacing: 0.2em; color: ${isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.2)'}; }
           .vera-presence { top: 55%; left: 50%; transform: translateX(-50%); opacity: 0 !important; pointer-events: none; }
@@ -1064,13 +1065,14 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           .portal-essence { font-size: 0.45rem; }
           .sofa-group { transform: translateX(-50%) scale(0.85); opacity: 0.9; }
           .coffee-table { opacity: 0.85; transform: translateX(-50%) scale(0.9); }
-          .floor-lamp-group { opacity: 0.75; transform: scale(0.85); }
-          .plant-group { opacity: 0.8; transform: scale(0.85); }
+          .floor-lamp-group { left: 8%; opacity: 0.75; transform: scale(0.85); }
+          .plant-group { right: 12%; opacity: 0.8; transform: scale(0.85); left: auto; }
+          .rug { bottom: 22%; }
           .ceiling-light { opacity: 0.7; }
         }
 
         @media (max-width: 480px) {
-          .greeting-area { top: 24%; padding: 0 15%; left: 0; transform: none; }
+          .greeting-area { top: 60%; padding: 0 15%; left: 0; transform: none; }
           .greeting { font-size: clamp(1.2rem, 4.5vw, 1.5rem); color: ${isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(42, 42, 42, 0.5)'}; }
           .time-essence { font-size: 0.5rem; margin-top: 6px; letter-spacing: 0.15em; color: ${isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.15)'}; }
           .vera-presence { top: 32%; left: auto; right: 24px; transform: none; opacity: 0 !important; pointer-events: none; gap: 14px; }
@@ -1087,7 +1089,8 @@ export default function VeraSanctuary({ onRoomSelect, userName }: VeraSanctuaryP
           .sofa-group { bottom: 22%; left: 50%; transform: translateX(-50%) scale(0.75); opacity: 0.7; }
           .coffee-table { left: 50%; transform: translateX(-50%) scale(0.7); opacity: 0.65; }
           .floor-lamp-group { left: 8%; opacity: 0.6; transform: scale(0.65); }
-          .plant-group { left: 4%; opacity: 0.65; transform: scale(0.7); bottom: 20%; }
+          .plant-group { right: 8%; left: auto; opacity: 0.65; transform: scale(0.7); bottom: 24%; }
+          .rug { bottom: 22%; }
           .ceiling-light { opacity: 0.3; }
           .bottom-bar { flex-direction: column; align-items: center; }
           .action-btn { width: 100%; max-width: 280px; padding: 14px 24px; font-size: 0.8rem; }
